@@ -1,0 +1,10 @@
+image: "/assets/SpaceShooterAssetPack_Ships.png"
+tile_width: 8
+tile_height: 8
+collision_groups: "default"
+animations {
+  id: "idle"
+  start_tile: 12
+  end_tile: 12
+}
+extrude_borders: 2

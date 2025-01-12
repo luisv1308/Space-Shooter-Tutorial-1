@@ -1,0 +1,159 @@
+local StateMachine = require "main.scripts.state_machine"
+
+-- Jugadores
+local BountyHunter = require "main.scripts.player.bounty_hunter"
+local Robot = require "main.scripts.player.robot"
+
+-- Variables globales
+local bounds = {x_min = 10, x_max = 460, y_min = 10, y_max = 620} -- Límites de la pantalla
+
+
+-- Constantes para los inputs
+local input_left = hash("left")
+local input_right = hash("right")
+local input_up = hash("up")
+local input_down = hash("down")
+local input_shoot = hash("shoot")
+
+function init(self)
+    msg.post("#bounty_hunter_sprite", "disable")
+    msg.post("#robot_sprite", "disable")
+    -- Adquirir el foco de entrada
+    msg.post(".", "acquire_input_focus")
+    -- Crear una instancia de Robot
+    -- Selección del personaje (puede venir de un archivo de configuración o input del jugador)
+    local selected_character = "robot" -- O "bounty_hunter"
+
+    if selected_character == "bounty_hunter" then
+        self.player = BountyHunter:new()
+        self.sprite = "#bounty_hunter_sprite" -- Cambia el sprite
+    elseif selected_character == "robot" then
+        self.player = Robot:new()
+        self.sprite = "#robot_sprite" -- Cambia el sprite
+    end
+    msg.post(self.sprite, "enable")
+    print("Jugador creado: " .. self.player.name)
+    -- Inicializar la máquina de estados
+    ini_state_machine(self)
+    -- Configuración inicial del jugador
+    self.position = go.get_position()
+    self.inputs = {} -- Tabla para rastrear inputs
+end
+
+function update(self, dt)
+     -- Aquí puedes actualizar la lógica del jugador
+     self.player.fire_timer = self.player.fire_timer - dt
+    -- Actualizar la máquina de estados
+    self.state_machine:update(dt)
+end
+
+function ini_state_machine(self)
+    -- Inicializar la máquina de estados
+    self.state_machine = StateMachine.new()
+
+    -- Estado IDLE
+    self.state_machine:add_state("idle", {
+        enter = function()
+            print("Entrando al estado IDLE")
+        end,
+        update = function(dt)
+            if has_movement_input(self) then
+                self.state_machine:set_state("moving")
+            elseif self.inputs[input_shoot] then
+                self.state_machine:set_state("shooting")
+            end
+        end,
+        exit = function()
+            print("Saliendo del estado IDLE")
+        end
+    })
+
+    -- Estado MOVING
+    self.state_machine:add_state("moving", {
+        enter = function()
+            print("Entrando al estado MOVING")
+        end,
+        update = function(dt)
+            handle_movement(self, dt)
+            if not has_movement_input(self) then
+                self.state_machine:set_state("idle")
+            elseif self.inputs[input_shoot] then
+                self.state_machine:set_state("shooting")
+            end
+        end,
+        exit = function()
+            print("Saliendo del estado MOVING")
+        end
+    })
+
+    -- Estado SHOOTING
+    self.state_machine:add_state("shooting", {
+        enter = function()
+            print("Entrando al estado SHOOTING")
+        end,
+        update = function(dt)
+            handle_movement(self, dt)
+            handle_shooting(self, dt)
+            if not self.inputs[input_shoot] then
+                if has_movement_input(self) then
+                    self.state_machine:set_state("moving")
+                else
+                    self.state_machine:set_state("idle")
+                end
+            end
+        end,
+        exit = function()
+            print("Saliendo del estado SHOOTING")
+        end
+    })
+
+    -- Estado inicial
+    self.state_machine:set_state("idle")
+end
+
+function handle_movement(self, dt)
+    local move = vmath.vector3(0, 0, 0)
+    if self.inputs[input_up] then
+        move.y = move.y + 1
+    end
+    if self.inputs[input_down] then
+        move.y = move.y - 1
+    end
+    if self.inputs[input_left] then
+        move.x = move.x - 1
+    end
+    if self.inputs[input_right] then
+        move.x = move.x + 1
+    end
+
+    -- Solo normalizar si el vector no es cero
+    if move.x ~= 0 or move.y ~= 0 then
+        move = vmath.normalize(move) * self.player.speed * dt
+        self.position = self.position + move
+    end
+
+    -- Restringir al jugador dentro de los límites de la pantalla
+    self.position.x = math.max(bounds.x_min, math.min(bounds.x_max, self.position.x))
+    self.position.y = math.max(bounds.y_min, math.min(bounds.y_max, self.position.y))
+    go.set_position(self.position)
+end
+
+function handle_shooting(self, dt)
+    self.player.fire_timer = self.player.fire_timer - dt
+    if self.inputs[input_shoot] and self.player.fire_timer <= 0 then
+        self.player.fire_timer = self.player.fire_rate
+        factory.create("#bullet_factory", self.position + vmath.vector3(0, 10, 0))
+    end
+end
+
+function has_movement_input(self)
+    return self.inputs[input_up] or self.inputs[input_down] or self.inputs[input_left] or self.inputs[input_right]
+end
+
+function on_input(self, action_id, action)
+    if action.pressed then
+        self.inputs[action_id] = true
+    elseif action.released then
+        self.inputs[action_id] = false
+    end
+end
