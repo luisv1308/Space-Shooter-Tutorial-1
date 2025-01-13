@@ -1,0 +1,6 @@
+name: "bounty_hunter_bullet_collection"
+instances {
+  id: "robot_bullet"
+  prototype: "/main/weapons/player/robot_bullet.go"
+}
+scale_along_z: 0

@@ -1,0 +1,30 @@
+go.property("speed", 100)
+go.property("direction", vmath.vector3(0, 1, 0))
+go.property("damage", 10)
+
+function init(self)
+    self.speed = self.speed or 200 -- Velocidad por defecto
+    self.direction = self.direction or vmath.vector3(0, 1, 0) -- Dirección por defecto
+	self.damage = self.damage or 10 -- Daño por defecto
+	print("ID del proyectil: ", go.get_id())
+	print("Velocidad del proyectil: ", self.speed)
+	print("Direccion del proyectil: ", self.direction)
+end
+
+function update(self, dt)
+    local position = go.get_position()
+    position = position + self.direction * self.speed * dt
+    go.set_position(position)
+
+    -- Eliminar el proyectil si sale de la pantalla
+    if position.y > 720 or position.y < 0 or position.x < 0 or position.x > 480 then
+        go.delete()
+    end
+end
+
+function on_message(self, message_id, message, sender)
+    if message_id == hash("collision_response") then
+        -- Manejar colisiones (por ejemplo, daño a enemigos)
+        go.delete()
+    end
+end

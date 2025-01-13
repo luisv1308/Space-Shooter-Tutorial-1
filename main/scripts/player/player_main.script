@@ -3,6 +3,9 @@ local StateMachine = require "main.scripts.state_machine"
 -- Jugadores
 local BountyHunter = require "main.scripts.player.bounty_hunter"
 local Robot = require "main.scripts.player.robot"
+-- Armas
+local BountyHunterWeapon = require "main.scripts.weapons.bounty_hunter_weapon"
+local RobotWeapon = require "main.scripts.weapons.robot_weapon"
 
 -- Variables globales
 local bounds = {x_min = 10, x_max = 460, y_min = 10, y_max = 620} -- Límites de la pantalla
@@ -22,14 +25,16 @@ function init(self)
     msg.post(".", "acquire_input_focus")
     -- Crear una instancia de Robot
     -- Selección del personaje (puede venir de un archivo de configuración o input del jugador)
-    local selected_character = "robot" -- O "bounty_hunter"
+    local selected_character = "bounty_hunter" -- O "bounty_hunter"
 
     if selected_character == "bounty_hunter" then
         self.player = BountyHunter:new()
         self.sprite = "#bounty_hunter_sprite" -- Cambia el sprite
+        self.weapon = BountyHunterWeapon:new("/factories#bounty_hunter_bullet_factory")
     elseif selected_character == "robot" then
         self.player = Robot:new()
         self.sprite = "#robot_sprite" -- Cambia el sprite
+        self.weapon = RobotWeapon:new("/factories#robot_bullet_factory")
     end
     msg.post(self.sprite, "enable")
     print("Jugador creado: " .. self.player.name)
@@ -38,11 +43,15 @@ function init(self)
     -- Configuración inicial del jugador
     self.position = go.get_position()
     self.inputs = {} -- Tabla para rastrear inputs
+    print("ID del jugador: ", go.get_id("/bounty_hunter_bullet_factory"))
+
 end
 
 function update(self, dt)
+    -- Actualizar temporizador del disparo
+    self.weapon:update(dt) -- Actualiza el temporizador del arma
      -- Aquí puedes actualizar la lógica del jugador
-     self.player.fire_timer = self.player.fire_timer - dt
+     --self.player.fire_timer = self.player.fire_timer - dt
     -- Actualizar la máquina de estados
     self.state_machine:update(dt)
 end
@@ -92,8 +101,8 @@ function ini_state_machine(self)
             print("Entrando al estado SHOOTING")
         end,
         update = function(dt)
-            handle_movement(self, dt)
-            handle_shooting(self, dt)
+            handle_movement(self, dt) -- Permite movimiento mientras dispara
+            self.weapon:fire(self.position, vmath.vector3(0, 1, 0)) -- Disparo hacia arriba
             if not self.inputs[input_shoot] then
                 if has_movement_input(self) then
                     self.state_machine:set_state("moving")
