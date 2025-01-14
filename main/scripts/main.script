@@ -1,0 +1,34 @@
+local base_width = 480
+local base_height = 640
+
+-- Ajustar el tamaño de la ventana manteniendo el aspecto
+local function update_window_size()
+    -- Obtener el tamaño actual de la ventana
+    local window_width, window_height = window.get_size()
+
+    -- Calcular el radio de aspecto base y actual
+    local base_aspect = base_width / base_height
+    local current_aspect = window_width / window_height
+
+    if current_aspect > base_aspect then
+        -- La ventana es más ancha: ajustar el ancho
+        local new_width = math.floor(base_height * current_aspect)
+        window.set_size(new_width, base_height)
+    else
+        -- La ventana es más alta: ajustar la altura
+        local new_height = math.floor(base_width / current_aspect)
+        window.set_size(base_width, new_height)
+    end
+end
+
+function init(self)
+    -- Configurar el tamaño inicial de la ventana
+    update_window_size()
+
+    -- Suscribirse a eventos de redimensionamiento de ventana
+    window.set_listener(function(self, event, data)
+        if event == window.WINDOW_EVENT_RESIZED then
+            update_window_size()
+        end
+    end)
+end

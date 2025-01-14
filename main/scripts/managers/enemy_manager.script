@@ -1,0 +1,59 @@
+local enemy_info_manager = require "main/scripts/managers/enemy_info_manager"
+
+-- enemy_manager.script
+function init(self)
+    print("Enemy manager initialized")
+    self.enemies = {} -- Lista para almacenar enemigos activos
+end
+
+function update(self, dt)
+    
+
+    -- Si no hay enemigos, notificar al game_manager
+    if #self.enemies == 0 then
+        --msg.post("game_manager", "level_cleared")
+    end
+end
+
+function on_message(self, message_id, message, sender)
+    if message_id == hash("spawn_enemies") then
+        spawn_enemies(self, message.level)
+    end
+
+    if message_id == hash("remove_enemy") then
+        remove_enemy(self, message.enemy_id)
+    end
+end
+
+function spawn_enemies(self, level)
+    local enemy_count = level * 5 -- Ajusta la lógica según el nivel
+    for i = 1, enemy_count do
+        local x = i * 80 -- Espaciados uniformes
+        local y = 550 -- Fuera del borde superior
+        local enemy = factory.create("#factory_enemy", vmath.vector3(x, y, 0), nil, {
+            enemy_type = hash("scout"),
+            level = level,
+            initial_position = vmath.vector3(x, y, 0)
+        })
+        table.insert(self.enemies, enemy)
+        enemy_info_manager.add_enemy(enemy)
+    end
+end
+
+-- Eliminar un enemigo
+function remove_enemy(self, enemy_id)
+    for i, id in ipairs(self.enemies) do
+        if id == enemy_id then
+            table.remove(self.enemies, i)
+            break
+        end
+    end
+end
+
+-- Limpiar todos los enemigos
+function clear_all_enemies(self)
+    for _, enemy_id in ipairs(self.enemies) do
+        go.delete(enemy_id)
+    end
+    self.enemies = {}
+end

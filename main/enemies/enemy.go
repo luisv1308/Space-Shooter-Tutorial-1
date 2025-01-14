@@ -1,33 +1,20 @@
 components {
-  id: "player"
-  component: "/main/scripts/player/player_main.script"
+  id: "enemy_main_script"
+  component: "/main/scripts/enemies/enemy_main_script.script"
 }
 embedded_components {
-  id: "bounty_hunter_sprite"
+  id: "sprite_scout"
   type: "sprite"
   data: "default_animation: \"idle\"\n"
   "material: \"/builtins/materials/sprite.material\"\n"
   "textures {\n"
   "  sampler: \"texture_sampler\"\n"
-  "  texture: \"/main/player/tiles/bounty_hunter_tilesource.tilesource\"\n"
+  "  texture: \"/main/enemies/tiles/enemy_scout_tilesource.tilesource\"\n"
   "}\n"
   ""
-  scale {
-    x: 3.0
-    y: 3.0
-    z: 4.0
+  position {
+    x: -1.5
   }
-}
-embedded_components {
-  id: "robot_sprite"
-  type: "sprite"
-  data: "default_animation: \"idle\"\n"
-  "material: \"/builtins/materials/sprite.material\"\n"
-  "textures {\n"
-  "  sampler: \"texture_sampler\"\n"
-  "  texture: \"/main/player/tiles/robot_tilesource.tilesource\"\n"
-  "}\n"
-  ""
   scale {
     x: 3.0
     y: 3.0
@@ -40,7 +27,10 @@ embedded_components {
   "mass: 0.0\n"
   "friction: 0.1\n"
   "restitution: 0.5\n"
-  "group: \"player\"\n"
+  "group: \"enemy\"\n"
+  "mask: \"player\"\n"
+  "mask: \"player_bullet\"\n"
+  "mask: \"enemy_collision\"\n"
   "mask: \"enemy\"\n"
   "embedded_collision_shape {\n"
   "  shapes {\n"
@@ -52,7 +42,7 @@ embedded_components {
   "    index: 0\n"
   "    count: 3\n"
   "  }\n"
-  "  data: 10.0\n"
+  "  data: 9.0\n"
   "  data: 10.0\n"
   "  data: 10.0\n"
   "}\n"

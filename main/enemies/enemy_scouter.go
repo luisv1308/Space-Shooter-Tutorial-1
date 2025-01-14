@@ -1,33 +1,17 @@
-components {
-  id: "player"
-  component: "/main/scripts/player/player_main.script"
-}
 embedded_components {
-  id: "bounty_hunter_sprite"
+  id: "sprite"
   type: "sprite"
   data: "default_animation: \"idle\"\n"
   "material: \"/builtins/materials/sprite.material\"\n"
   "textures {\n"
   "  sampler: \"texture_sampler\"\n"
-  "  texture: \"/main/player/tiles/bounty_hunter_tilesource.tilesource\"\n"
+  "  texture: \"/main/enemies/tiles/enemy_scout_tilesource.tilesource\"\n"
   "}\n"
   ""
-  scale {
-    x: 3.0
-    y: 3.0
-    z: 4.0
+  position {
+    x: -1.5
+    y: 1.5
   }
-}
-embedded_components {
-  id: "robot_sprite"
-  type: "sprite"
-  data: "default_animation: \"idle\"\n"
-  "material: \"/builtins/materials/sprite.material\"\n"
-  "textures {\n"
-  "  sampler: \"texture_sampler\"\n"
-  "  texture: \"/main/player/tiles/robot_tilesource.tilesource\"\n"
-  "}\n"
-  ""
   scale {
     x: 3.0
     y: 3.0
@@ -40,8 +24,8 @@ embedded_components {
   "mass: 0.0\n"
   "friction: 0.1\n"
   "restitution: 0.5\n"
-  "group: \"player\"\n"
-  "mask: \"enemy\"\n"
+  "group: \"default\"\n"
+  "mask: \"default\"\n"
   "embedded_collision_shape {\n"
   "  shapes {\n"
   "    shape_type: TYPE_BOX\n"
@@ -53,7 +37,7 @@ embedded_components {
   "    count: 3\n"
   "  }\n"
   "  data: 10.0\n"
-  "  data: 10.0\n"
+  "  data: 7.5\n"
   "  data: 10.0\n"
   "}\n"
   ""

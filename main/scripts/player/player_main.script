@@ -1,11 +1,11 @@
-local StateMachine = require "main.scripts.state_machine"
+local StateMachine = require "main/scripts/state_machine"
 
 -- Jugadores
-local BountyHunter = require "main.scripts.player.bounty_hunter"
-local Robot = require "main.scripts.player.robot"
+local BountyHunter = require "main/scripts/player/bounty_hunter"
+local Robot = require "main/scripts/player/robot"
 -- Armas
-local BountyHunterWeapon = require "main.scripts.weapons.bounty_hunter_weapon"
-local RobotWeapon = require "main.scripts.weapons.robot_weapon"
+local BountyHunterWeapon = require "main/scripts/weapons/bounty_hunter_weapon"
+local RobotWeapon = require "main/scripts/weapons/robot_weapon"
 
 -- Variables globales
 local bounds = {x_min = 10, x_max = 460, y_min = 10, y_max = 620} -- Límites de la pantalla

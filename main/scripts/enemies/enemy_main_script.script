@@ -1,0 +1,137 @@
+-- enemy.script
+local StateMachine = require "main/scripts/state_machine" -- Tu máquina de estados
+local enemy_info_manager = require "main/scripts/managers/enemy_info_manager"
+-- Enemigo
+local EnemyScout = require "main/scripts/enemies/enemy_scout"
+
+-- Propiedades del enemigo
+go.property("enemy_type", hash("scout"))
+go.property("initial_position", vmath.vector3(0, 0, 0))
+
+function init(self)
+    --self.target = self.target or nil -- Puede ser el jugador u otro objetivo
+	-- Inicializar enemigo por defacto
+	if self.enemy_type == hash("scout") then
+        local props = {
+            id = go.get_id(),
+            position = self.initial_position
+        }
+		self.enemy = EnemyScout:new(props)
+	end
+
+    -- Inicializar la máquina de estados
+    init_enemy_state_machine(self)
+end
+
+function update(self, dt)
+    -- Actualizar la máquina de estados
+    self.state_machine:update(dt)
+end
+
+function on_message(self, message_id, message, sender)
+    if message_id == hash("take_damage") then
+        self.health = self.health - message.amount
+        if self.health <= 0 then
+            self.state_machine:change_state("dead")
+        else
+            self.state_machine:change_state("damage")
+        end
+    end
+    if message_id == hash("contact_point_response")  then
+        
+    end
+end
+
+function init_enemy_state_machine(self)
+    -- Inicializar la máquina de estados
+    self.state_machine = StateMachine.new()
+
+    -- Estado IDLE
+    self.state_machine:add_state("idle", {
+        enter = function()
+            print("Enemigo entrando al estado IDLE")
+        end,
+        update = function(dt)
+            if self.enemy:should_patrol(self) then
+                self.state_machine:set_state("patrolling")
+            elseif self.enemy:is_player_in_range(self) then
+                self.state_machine:set_state("chasing")
+            end
+        end,
+        exit = function()
+            print("Enemigo saliendo del estado IDLE")
+        end
+    })
+
+    -- Estado PATROLLING
+    self.state_machine:add_state("patrolling", {
+        enter = function()
+            print("Enemigo entrando al estado PATROLLING")
+            self.patrol_target = self.enemy:get_next_patrol_point(self)
+        end,
+        update = function(dt)
+            self.enemy:move_towards(self.patrol_target, dt)
+            if self.enemy:has_reached_target(self, self.patrol_target) then
+                self.patrol_target = self.enemy:get_next_patrol_point(self)
+            end
+            if self.enemy:is_player_in_range(self) then
+                self.state_machine:set_state("chasing")
+            end
+        end,
+        exit = function()
+            print("Enemigo saliendo del estado PATROLLING")
+        end
+    })
+
+    -- Estado CHASING
+    self.state_machine:add_state("chasing", {
+        enter = function()
+            self.active_enemies = enemy_info_manager.get_active_enemies()
+            print("Enemigo entrando al estado CHASING")
+        end,
+        update = function(dt)
+            local player_position = self.enemy:get_player_position()
+            self.enemy:move_towards(player_position, dt, self.active_enemies)
+            if self.enemy:is_player_in_attack_range(self) then
+                --self.state_machine:set_state("attacking")
+            elseif not self.enemy:is_player_in_range(self) then
+                --self.state_machine:set_state("patrolling")
+            end
+        end,
+        exit = function()
+            print("Enemigo saliendo del estado CHASING")
+        end
+    })
+
+    -- Estado ATTACKING
+    self.state_machine:add_state("attacking", {
+        enter = function()
+            print("Enemigo entrando al estado ATTACKING")
+            self.attack_timer = 0
+        end,
+        update = function(dt)
+            self.attack_timer = self.attack_timer + dt
+            if self.attack_timer >= self.attack_cooldown then
+                self:perform_attack()
+                self.attack_timer = 0
+            end
+            if not self.enemy:is_player_in_attack_range(self) then
+                if self.enemy:is_player_in_range(self) then
+                    self.state_machine:set_state("chasing")
+                else
+                    self.state_machine:set_state("patrolling")
+                end
+            end
+        end,
+        exit = function()
+            print("Enemigo saliendo del estado ATTACKING")
+        end
+    })
+
+    -- Estado inicial
+    self.state_machine:set_state("chasing")
+end
+
+function final(self)
+    -- Limpieza si es necesario
+end
