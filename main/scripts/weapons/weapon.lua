@@ -14,7 +14,6 @@ function Weapon:new(factory_url, damage, speed, fire_rate, object_id)
 end
 
 function Weapon:fire(position, direction)
-    print(self.speed, "factory_url")
     local props = {}
     props[hash(self.object_id)] = {
         speed = self.speed,

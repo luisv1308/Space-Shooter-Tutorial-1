@@ -27,4 +27,13 @@ function on_message(self, message_id, message, sender)
         -- Manejar colisiones (por ejemplo, daño a enemigos)
         go.delete()
     end
+    if message_id == hash("contact_point_response") then
+        -- Verifica si el objeto con el que colisionó es un enemigo
+        if message.other_group == hash("enemy") then
+            -- Envía el mensaje "take_damage" al script del enemigo
+            msg.post(message.other_id, "take_damage", { amount = self.damage })
+            -- Opcional: Destruye la bala
+            go.delete()
+        end
+    end
 end

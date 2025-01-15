@@ -135,26 +135,6 @@ function Enemy:perform_attack()
     msg.post("player", "take_damage", { damage = self.attack_damage })
 end
 
-function Enemy:apply_separation(enemies, dt)
-    local separation_force = vmath.vector3(0, 0, 0)
-    local separation_radius = 20 -- Distancia mínima entre enemigos
-
-    for _, other in ipairs(enemies) do
-        if other ~= self.id then
-            local other_position = go.get_position(other)
-            local distance = vmath.length(self.position - other_position)
-
-            if distance < separation_radius then
-                local repulsion = vmath.normalize(self.position - other_position)
-                separation_force = separation_force + (repulsion / distance)
-            end
-        end
-    end
-
-    -- Aplicar la fuerza de separación
-    self.position = self.position + separation_force * dt
-end
-
 function does_object_exist(id)
     return pcall(function(id) go.get_position(id) end, id) == true
 end
