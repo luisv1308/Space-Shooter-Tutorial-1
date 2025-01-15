@@ -17,6 +17,7 @@ function init(self)
             position = self.initial_position
         }
 		self.enemy = EnemyScout:new(props)
+        
 	end
 
     -- Inicializar la máquina de estados
@@ -24,6 +25,8 @@ function init(self)
 end
 
 function update(self, dt)
+    -- Actualizar temporizador del disparo
+    self.enemy.weapon:update(dt) -- Actualiza el temporizador del arma
     -- Actualizar la máquina de estados
     self.state_machine:update(dt)
 end
@@ -90,7 +93,7 @@ function init_enemy_state_machine(self)
             local player_position = self.enemy:get_player_position()
             self.enemy:move_towards(player_position, dt, self.active_enemies)
             if self.enemy:is_player_in_attack_range(self) then
-                --self.state_machine:set_state("attacking")
+                self.state_machine:set_state("attacking")
             elseif not self.enemy:is_player_in_range(self) then
                 --self.state_machine:set_state("patrolling")
             end
@@ -104,19 +107,22 @@ function init_enemy_state_machine(self)
     self.state_machine:add_state("attacking", {
         enter = function()
             print("Enemigo entrando al estado ATTACKING")
-            self.attack_timer = 0
+            self.enemy:perform_attack()
+            self.enemy.attack_timer = 0
         end,
         update = function(dt)
-            self.attack_timer = self.attack_timer + dt
-            if self.attack_timer >= self.attack_cooldown then
-                self:perform_attack()
-                self.attack_timer = 0
+            self.enemy.attack_timer = self.enemy.attack_timer + dt
+            --print("Tiempo de ataque: " .. self.enemy.attack_timer)
+            if self.enemy.attack_timer >= self.enemy.attack_cooldown then
+                print("Enemigo atacando *************************************")
+                self.enemy:perform_attack()
+                self.enemy.attack_timer = 0
             end
             if not self.enemy:is_player_in_attack_range(self) then
                 if self.enemy:is_player_in_range(self) then
                     self.state_machine:set_state("chasing")
                 else
-                    self.state_machine:set_state("patrolling")
+                    self.state_machine:set_state("chasing")
                 end
             end
         end,

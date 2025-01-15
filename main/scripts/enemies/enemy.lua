@@ -9,12 +9,15 @@ function Enemy.new(properties)
     self.attack_power = properties.attack_power or 1
     self.patrol_points = properties.patrol_points or {}
     self.detection_range = properties.detection_range or 50
-    self.attack_range = properties.attack_range or 10
+    self.attack_range = properties.attack_range or 200
     self.speed = properties.speed or 20
     self.target_reach_threshold = properties.target_reach_threshold or 1
     self.attack_damage = properties.attack_damage or 10
     self.position = properties.position or vmath.vector3(0, 500, 0)
     self.current_patrol_index = 0
+    self.attack_timer = 0
+    self.attack_cooldown = 0.5
+    self.weapon = properties.weapon or nil
 
     return self
 end
@@ -132,7 +135,15 @@ end
 -- Realiza el ataque
 function Enemy:perform_attack()
     print("El enemigo está atacando al jugador")
-    msg.post("player", "take_damage", { damage = self.attack_damage })
+    local my_position = go.get_position()
+    local player_position = self:get_player_position()
+    print("MEGA ATTACKUUUUUUUUUUUUUUUU")
+    -- Dispara al jugador
+    if self.weapon then
+        print("MEGA ATTACK 222222222222222222222222")
+        self.weapon:fire(my_position, vmath.normalize(player_position - my_position))
+    end
+    --msg.post("player", "take_damage", { damage = self.attack_damage })
 end
 
 function does_object_exist(id)

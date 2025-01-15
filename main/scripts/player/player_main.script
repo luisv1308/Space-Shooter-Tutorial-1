@@ -151,7 +151,7 @@ function handle_shooting(self, dt)
     self.player.fire_timer = self.player.fire_timer - dt
     if self.inputs[input_shoot] and self.player.fire_timer <= 0 then
         self.player.fire_timer = self.player.fire_rate
-        factory.create("#bullet_factory", self.position + vmath.vector3(0, 10, 0))
+        --factory.create("#bullet_factory", self.position + vmath.vector3(0, 10, 0))
     end
 end
 

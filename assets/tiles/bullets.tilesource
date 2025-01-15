@@ -1,0 +1,15 @@
+image: "/assets/SpaceShooterAssetPack_Projectiles.png"
+tile_width: 8
+tile_height: 8
+collision_groups: "default"
+animations {
+  id: "bullet1"
+  start_tile: 1
+  end_tile: 1
+}
+animations {
+  id: "bullet2"
+  start_tile: 2
+  end_tile: 2
+}
+extrude_borders: 2

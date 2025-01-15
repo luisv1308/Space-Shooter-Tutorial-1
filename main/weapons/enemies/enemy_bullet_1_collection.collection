@@ -1,0 +1,6 @@
+name: "enemy_bullet_1_collection"
+instances {
+  id: "enemy_bullet_1"
+  prototype: "/main/weapons/enemies/enemy_bullet_1.go"
+}
+scale_along_z: 0

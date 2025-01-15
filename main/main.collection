@@ -27,5 +27,9 @@ embedded_instances {
   "  id: \"robot_bullet_factory\"\n"
   "  component: \"/main/weapons/player/robot_bullet_factory.collectionfactory\"\n"
   "}\n"
+  "components {\n"
+  "  id: \"enemy_bullet_1_factory\"\n"
+  "  component: \"/main/weapons/enemies/enemy_bullet_1_factory.collectionfactory\"\n"
+  "}\n"
   ""
 }
