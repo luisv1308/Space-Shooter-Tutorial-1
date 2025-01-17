@@ -14,10 +14,15 @@ function Enemy.new(properties)
     self.target_reach_threshold = properties.target_reach_threshold or 1
     self.attack_damage = properties.attack_damage or 10
     self.position = properties.position or vmath.vector3(0, 500, 0)
+    self.initial_position = properties.position or vmath.vector3(0, 500, 0)
     self.current_patrol_index = 0
     self.attack_timer = 0
     self.attack_cooldown = 0.5
     self.weapon = properties.weapon or nil
+    self.movement_pattern = properties.movement_pattern or "linear"
+    self.amplitude = properties.amplitude or 5
+    self.direction = self.direction or 1 -- Si no se pasa, usa 1 por defecto
+    self.time = 0 -- Tiempo acumulado para wave
 
     return self
 end
@@ -33,8 +38,14 @@ function Enemy:take_damage(damage)
     end
 end
 
+-- Checar si esta fuera de la pantalla
+function Enemy:is_out_of_bounds()
+    return self.position.y < -100 or self.position.y > 1200
+end
+
 function Enemy:die()
     -- Lógica de muerte
+
 end
 
 -- Función para determinar si debe patrullar
@@ -144,6 +155,46 @@ function Enemy:perform_attack()
         self.weapon:fire(my_position, vmath.normalize(player_position - my_position))
     end
     --msg.post("player", "take_damage", { damage = self.attack_damage })
+end
+
+function  Enemy:apply_movement_pattern(dt)
+    if self.movement_pattern == hash(string.lower("linear")) then
+        lineal_movement(self, dt)
+    elseif self.movement_pattern == hash(string.lower("zigzag")) then
+        zigzag_movement(self, dt)
+    elseif self.movement_pattern == hash(string.lower("wave")) then
+        wave_movement(self, dt)
+    end
+    go.set_position(self.position, go.get_id())
+end
+
+function lineal_movement(self, dt)
+    self.position.y = self.position.y - self.speed * dt
+    go.set_position(self.position)
+end
+
+function zigzag_movement(self, dt)
+    local speed = 100
+    self.position.x = self.position.x + self.direction * speed * dt
+    self.position.y = self.position.y - speed * dt
+
+    -- Cambiar dirección al alcanzar un límite
+    if self.position.x > 400 or self.position.x < 100 then
+        self.direction = -self.direction
+    end
+    go.set_position(self.position)
+end
+
+function wave_movement(self, dt)
+    local speed = 50
+    local amplitude = 1
+    local frequency = 2
+
+    self.position.x = self.initial_position.x + math.sin(self.time * frequency) * amplitude
+    self.position.y = self.position.y - speed * dt
+    self.time = self.time + dt
+
+    go.set_position(self.position)
 end
 
 function does_object_exist(id)

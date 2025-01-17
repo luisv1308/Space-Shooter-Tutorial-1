@@ -4,43 +4,121 @@ local enemy_info_manager = require "main/scripts/managers/enemy_info_manager"
 function init(self)
     print("Enemy manager initialized")
     self.enemies = {} -- Lista para almacenar enemigos activos
+    self.spawn_timer = 0
+    self.current_level = 1
+    self.formation_index = 1
+    self.spawn_formations = {
+        {type = "line_horizontal", count = 10},
+        {type = "circle", count = 8},
+        {type = "triangle", count = 9},
+        {type = "zigzag", count = 10},
+        {type = "diagonal", count = 5},
+        {type = "rectangle", count = 12},
+        {type = "h_formation", count = 7},
+        {type = "v_formation", count = 9},
+    }
 end
 
 function update(self, dt)
-    
-
-    -- Si no hay enemigos, notificar al game_manager
-    if #self.enemies == 0 then
-        --msg.post("game_manager", "level_cleared")
+    self.spawn_timer = self.spawn_timer + dt
+    if self.spawn_timer >= 5 then -- Cada 5 segundos
+        local formation = self.spawn_formations[self.formation_index]
+        if formation then
+            spawn_enemies_formations(self, formation.type, formation.count, self.current_level)
+            self.formation_index = self.formation_index % #self.spawn_formations + 1
+        end
+        self.spawn_timer = 0
     end
 end
 
 function on_message(self, message_id, message, sender)
-    if message_id == hash("spawn_enemies") then
-        spawn_enemies(self, message.level)
-    end
-
     if message_id == hash("remove_enemy") then
+        print("Enemigo removido")
         remove_enemy(self, message.enemy_id)
     end
 end
 
-function spawn_enemies(self, level)
-    local enemy_count = level * 5 -- Ajusta la lógica según el nivel
-    for i = 1, enemy_count do
-        local x = i * 80 -- Espaciados uniformes
-        local y = 550 -- Fuera del borde superior
-        local enemy = factory.create("#factory_enemy", vmath.vector3(x, y, 0), nil, {
-            enemy_type = hash("scout"),
-            level = level,
-            initial_position = vmath.vector3(x, y, 0)
-        })
-        table.insert(self.enemies, enemy)
-        enemy_info_manager.add_enemy(enemy)
+function spawn_enemies_formations(self, formation_type, count, level)
+    local spacing_x = 40 -- Espaciado horizontal
+    local spacing_y = 40 -- Espaciado vertical
+    local formation_radius = 100 -- Radio para formaciones circulares
+    local screen_width = 480
+    local screen_height = 640
+
+    for i = 1, count do
+        local x, y
+
+        if formation_type == "line_horizontal" then
+            x = 40 + (i - 1) * spacing_x
+            y = screen_height - 50
+
+        elseif formation_type == "line_vertical" then
+            x = screen_width / 2
+            y = screen_height - 50 - (i - 1) * spacing_y
+
+        elseif formation_type == "circle" then
+            local angle_step = (2 * math.pi) / count
+            local angle = (i - 1) * angle_step
+            x = screen_width / 2 + math.cos(angle) * formation_radius
+            y = screen_height - 50  + math.sin(angle) * formation_radius
+
+        elseif formation_type == "triangle" then
+            local row = math.floor((math.sqrt(8 * i + 1) - 1) / 2)
+            local col = i - (row * (row + 1)) / 2
+            x = screen_width / 2 + (col - row / 2) * spacing_x
+            y = screen_height  - row * spacing_y
+
+        elseif formation_type == "zigzag" then
+            local direction = ((math.floor((i - 1) / 2) % 2) == 0) and 1 or -1
+            x = 240 + direction * ((i - 1) % 2) * spacing_x
+            y = 650 + math.floor((i - 1) / 2) * spacing_y
+
+        elseif formation_type == "diagonal" then
+            x = 40 + (i - 1) * spacing_x
+            y = screen_height - 50 - (i - 1) * spacing_y
+
+        elseif formation_type == "rectangle" then
+            local cols = 4
+            local row = math.floor((i - 1) / cols)
+            local col = (i - 1) % cols
+            x = 40 + col * spacing_x
+            y = screen_height - 50 - row * spacing_y
+
+        elseif formation_type == "random" then
+            x = math.random(40, screen_width - 40)
+            y = math.random(screen_height - 200, screen_height - 50)
+
+        elseif formation_type == "h_formation" then
+            local mid = math.ceil(count / 2)
+            local offset = math.abs(i - mid)
+            x = screen_width / 2 + offset * spacing_x * (i > mid and 1 or -1)
+            y = screen_height - 50 - (i - mid) * spacing_y
+
+        elseif formation_type == "v_formation" then
+            local mid = math.ceil(count / 2)
+            local offset = math.abs(i - mid)
+            x = screen_width / 2 + (i - mid) * spacing_x
+            y = screen_height - 50 - offset * spacing_y
+        
+        -- Nueva formación: Doble columna
+        elseif formation_type == "double_column" then
+            x = 200 + ((i - 1) % 2) * spacing_x
+            y = 650 + math.floor((i - 1) / 2) * spacing_y
+        end
+
+        if x and y then
+            local enemy = factory.create("#factory_enemy", vmath.vector3(x, y, 0), nil, {
+                enemy_type = hash("scout"),
+                initial_position = vmath.vector3(x, y, 0),
+                level = level,
+                movement_pattern = hash("linear")
+            })
+            table.insert(self.enemies, enemy)
+            enemy_info_manager.add_enemy(enemy)
+        end
     end
 end
 
--- Eliminar un enemigo
 function remove_enemy(self, enemy_id)
     for i, id in ipairs(self.enemies) do
         if id == enemy_id then
@@ -50,7 +128,6 @@ function remove_enemy(self, enemy_id)
     end
 end
 
--- Limpiar todos los enemigos
 function clear_all_enemies(self)
     for _, enemy_id in ipairs(self.enemies) do
         go.delete(enemy_id)

@@ -7,6 +7,7 @@ local EnemyScout = require "main/scripts/enemies/enemy_scout"
 -- Propiedades del enemigo
 go.property("enemy_type", hash("scout"))
 go.property("initial_position", vmath.vector3(0, 0, 0))
+go.property("movement_pattern", hash("linear"))
 
 function init(self)
     --self.target = self.target or nil -- Puede ser el jugador u otro objetivo
@@ -14,10 +15,10 @@ function init(self)
 	if self.enemy_type == hash("scout") then
         local props = {
             id = go.get_id(),
+            movement_pattern = self.movement_pattern,
             position = self.initial_position
         }
 		self.enemy = EnemyScout:new(props)
-        
 	end
 
     -- Inicializar la máquina de estados
@@ -25,6 +26,10 @@ function init(self)
 end
 
 function update(self, dt)
+    -- Checar si esta fuera de la pantalla
+    if self.enemy:is_out_of_bounds() then
+        self.state_machine:set_state("dead")
+    end
     -- Actualizar temporizador del disparo
     self.enemy.weapon:update(dt) -- Actualiza el temporizador del arma
     -- Actualizar la máquina de estados
@@ -86,17 +91,21 @@ function init_enemy_state_machine(self)
     -- Estado CHASING
     self.state_machine:add_state("chasing", {
         enter = function()
-            self.active_enemies = enemy_info_manager.get_active_enemies()
+            --self.active_enemies = enemy_info_manager.get_active_enemies()
             print("Enemigo entrando al estado CHASING")
         end,
         update = function(dt)
-            local player_position = self.enemy:get_player_position()
+            self.enemy:apply_movement_pattern(dt)
+            if self.enemy:is_player_in_attack_range(self) then
+                self.state_machine:set_state("attacking")
+            end
+            --[[ local player_position = self.enemy:get_player_position()
             self.enemy:move_towards(player_position, dt, self.active_enemies)
             if self.enemy:is_player_in_attack_range(self) then
                 self.state_machine:set_state("attacking")
             elseif not self.enemy:is_player_in_range(self) then
                 --self.state_machine:set_state("patrolling")
-            end
+            end ]]
         end,
         exit = function()
             print("Enemigo saliendo del estado CHASING")
@@ -111,6 +120,7 @@ function init_enemy_state_machine(self)
             self.enemy.attack_timer = 0
         end,
         update = function(dt)
+            self.enemy:apply_movement_pattern(dt)
             self.enemy.attack_timer = self.enemy.attack_timer + dt
             --print("Tiempo de ataque: " .. self.enemy.attack_timer)
             if self.enemy.attack_timer >= self.enemy.attack_cooldown then
@@ -153,7 +163,9 @@ function init_enemy_state_machine(self)
             print("Enemigo entrando al estado DEAD")
         end,
         update = function(dt)
-            if self.enemy.health <= 0 then
+            if self.enemy.health <= 0 or self.enemy:is_out_of_bounds() then
+                -- Enviar mensaje a enemy manager
+                msg.post("enemy_manager", "remove_enemy", { enemy = go.get_id() })
                 go.delete()
             end
         end,

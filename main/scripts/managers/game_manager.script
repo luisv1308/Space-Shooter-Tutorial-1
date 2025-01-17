@@ -7,7 +7,7 @@ local LEVEL_DATA = {
 
 function init(self)
     self.current_level = 1
-    msg.post("enemy_manager", "spawn_enemies", { level = self.current_level })
+    --msg.post("enemy_manager", "spawn_enemies", { level = self.current_level })
 end
 
 function update(self, dt)
@@ -18,7 +18,7 @@ function on_message(self, message_id, message, sender)
     if message_id == hash("level_cleared") then
         self.current_level = self.current_level + 1
         if self.current_level <= #LEVEL_DATA then
-            msg.post("enemy_manager", "spawn_enemies", { level = self.current_level })
+            msg.post("/enemy_manager", "spawn_enemies", { level = self.current_level })
         else
             print("¡Juego completado!")
         end
