@@ -11,7 +11,7 @@ function Enemy.new(properties)
     self.detection_range = properties.detection_range or 50
     self.attack_range = properties.attack_range or 200
     self.speed = properties.speed or 20
-    self.target_reach_threshold = properties.target_reach_threshold or 1
+    self.target_reach_threshold = properties.target_reach_threshold or 35
     self.attack_damage = properties.attack_damage or 10
     self.position = properties.position or vmath.vector3(0, 500, 0)
     self.initial_position = properties.position or vmath.vector3(0, 500, 0)
@@ -23,6 +23,7 @@ function Enemy.new(properties)
     self.amplitude = properties.amplitude or 5
     self.direction = self.direction or 1 -- Si no se pasa, usa 1 por defecto
     self.time = 0 -- Tiempo acumulado para wave
+    self.center_screen = vmath.vector3(240, 300, 0)
 
     return self
 end
@@ -68,7 +69,7 @@ function Enemy:is_player_in_attack_range()
 end
 
 -- Mueve al enemigo hacia un objetivo
-function Enemy:move_towards(target, dt, active_enemies)
+function Enemy:move_towards(target, dt)
     local target_position = target
 
     -- Agregar un desplazamiento aleatorio
@@ -97,26 +98,26 @@ function Enemy:move_towards(target, dt, active_enemies)
         local speed = self.speed  -- Usa la velocidad definida para el enemigo
         local move_vector = direction * self.speed * dt
 
-        -- Comprobar la distancia entre este enemigo y los otros enemigos
-        if active_enemies then
-            --local enemy_pos = go.get_position(self.url)
-            for _, other_enemy_url in ipairs(active_enemies) do
-                if msg.url(other_enemy_url) ~= go.get_id() then
-                    -- Checar que objeto existe 
-                    if does_object_exist(other_enemy_url) then
-                        local other_enemy_pos = go.get_position(other_enemy_url)
-                        local separation_vector = enemy_pos - other_enemy_pos
-                        local separation_distance = vmath.length(separation_vector)
+        -- -- Comprobar la distancia entre este enemigo y los otros enemigos
+        -- if active_enemies then
+        --     --local enemy_pos = go.get_position(self.url)
+        --     for _, other_enemy_url in ipairs(active_enemies) do
+        --         if msg.url(other_enemy_url) ~= go.get_id() then
+        --             -- Checar que objeto existe 
+        --             if does_object_exist(other_enemy_url) then
+        --                 local other_enemy_pos = go.get_position(other_enemy_url)
+        --                 local separation_vector = enemy_pos - other_enemy_pos
+        --                 local separation_distance = vmath.length(separation_vector)
 
-                        -- Si está demasiado cerca, aplica una corrección
-                        if separation_distance < 55 and vmath.length(separation_vector) > 0 then  -- Ajusta este valor de distancia mínima
-                            move_vector = move_vector + vmath.normalize(separation_vector) * 0.2
-                        end
-                    end
+        --                 -- Si está demasiado cerca, aplica una corrección
+        --                 if separation_distance < 55 and vmath.length(separation_vector) > 0 then  -- Ajusta este valor de distancia mínima
+        --                     move_vector = move_vector + vmath.normalize(separation_vector) * 0.2
+        --                 end
+        --             end
                     
-                end
-            end
-        end
+        --         end
+        --     end
+        -- end
 
         -- Actualizamos la posición
         go.set_position(enemy_pos + move_vector, go.get_id())
@@ -130,6 +131,12 @@ function Enemy:get_next_patrol_point()
         self.current_patrol_index = 1
     end
     return self.patrol_points[self.current_patrol_index]
+end
+
+-- Mover a posición inicial
+function Enemy:move_to_initial_position(dt)
+    target = self.initial_position
+    self:move_towards(target, dt)
 end
 
 -- Verifica si alcanzó el objetivo
@@ -148,22 +155,22 @@ function Enemy:perform_attack()
     print("El enemigo está atacando al jugador")
     local my_position = go.get_position()
     local player_position = self:get_player_position()
-    print("MEGA ATTACKUUUUUUUUUUUUUUUU")
     -- Dispara al jugador
     if self.weapon then
-        print("MEGA ATTACK 222222222222222222222222")
         self.weapon:fire(my_position, vmath.normalize(player_position - my_position))
     end
     --msg.post("player", "take_damage", { damage = self.attack_damage })
 end
 
 function  Enemy:apply_movement_pattern(dt)
-    if self.movement_pattern == hash(string.lower("linear")) then
+    if self.movement_pattern == hash(string.lower("lineal")) then
         lineal_movement(self, dt)
     elseif self.movement_pattern == hash(string.lower("zigzag")) then
         zigzag_movement(self, dt)
     elseif self.movement_pattern == hash(string.lower("wave")) then
         wave_movement(self, dt)
+    elseif self.movement_pattern == hash(string.lower("hit_and_run")) then
+        self:move_towards(self.center_screen, dt)
     end
     go.set_position(self.position, go.get_id())
 end

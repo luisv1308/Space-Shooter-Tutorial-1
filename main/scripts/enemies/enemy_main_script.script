@@ -60,7 +60,7 @@ function init_enemy_state_machine(self)
             if self.enemy:should_patrol(self) then
                 self.state_machine:set_state("patrolling")
             elseif self.enemy:is_player_in_range(self) then
-                self.state_machine:set_state("chasing")
+                --self.state_machine:set_state("chasing")
             end
         end,
         exit = function()
@@ -96,9 +96,17 @@ function init_enemy_state_machine(self)
         end,
         update = function(dt)
             self.enemy:apply_movement_pattern(dt)
-            if self.enemy:is_player_in_attack_range(self) then
+            if self.enemy.movement_pattern ~= hash("hit_and_run") then
+                if self.enemy:is_player_in_attack_range(self) then
+                    self.state_machine:set_state("attacking")
+                end
+            end
+            if self.enemy:has_reached_target(self.enemy.center_screen) then
+                print("Enemigo has reached target")
                 self.state_machine:set_state("attacking")
             end
+            
+
             --[[ local player_position = self.enemy:get_player_position()
             self.enemy:move_towards(player_position, dt, self.active_enemies)
             if self.enemy:is_player_in_attack_range(self) then
@@ -116,24 +124,37 @@ function init_enemy_state_machine(self)
     self.state_machine:add_state("attacking", {
         enter = function()
             print("Enemigo entrando al estado ATTACKING")
+            print("Enemigo atacando *************************************", self.enemy.movement_pattern)
             self.enemy:perform_attack()
             self.enemy.attack_timer = 0
+
         end,
         update = function(dt)
-            self.enemy:apply_movement_pattern(dt)
+            print("Enemigo atacando TEST *************************************", self.enemy.movement_pattern == hash("hit_and_run"))
+            if self.enemy.movement_pattern ~= hash("hit_and_run") then
+                print("NO ES HIT AND RUNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN")
+                self.enemy:apply_movement_pattern(dt)
+            end
+            
             self.enemy.attack_timer = self.enemy.attack_timer + dt
             --print("Tiempo de ataque: " .. self.enemy.attack_timer)
             if self.enemy.attack_timer >= self.enemy.attack_cooldown then
-                print("Enemigo atacando *************************************")
+                print("Enemigo atacandoRRRRRRRRRRR *************************************")
                 self.enemy:perform_attack()
                 self.enemy.attack_timer = 0
             end
-            if not self.enemy:is_player_in_attack_range(self) then
-                if self.enemy:is_player_in_range(self) then
-                    self.state_machine:set_state("chasing")
-                else
-                    self.state_machine:set_state("chasing")
+            if self.enemy.movement_pattern ~= hash("hit_and_run") then
+                print("NO ES HIT AND RUNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN *************")
+                if not self.enemy:is_player_in_attack_range(self) then
+                    if self.enemy:is_player_in_range(self) then
+                        self.state_machine:set_state("chasing")
+                    else
+                        self.state_machine:set_state("chasing")
+                    end
                 end
+            else
+                print("ES HIT AND RUNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN *************")
+                self.state_machine:set_state("runaway")
             end
         end,
         exit = function()
@@ -154,6 +175,23 @@ function init_enemy_state_machine(self)
         end,
         exit = function()
             print("Enemigo saliendo del estado DAMAGE")
+        end
+    })
+
+    -- Estado RUNAWAY
+    self.state_machine:add_state("runaway", {
+        enter = function()
+            print("Enemigo entrando al estado RUNAWAY")
+        end,
+        update = function(dt)
+            self.enemy:move_to_initial_position(dt)
+            -- if self.enemy:has_reached_target(self.enemy.initial_position) then
+            --     self.enemy.health = 0
+            --     self.state_machine:set_state("dead")
+            -- end
+        end,
+        exit = function()
+            print("Enemigo saliendo del estado RUN")
         end
     })
 
