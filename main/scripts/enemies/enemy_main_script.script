@@ -131,8 +131,8 @@ function init_enemy_state_machine(self)
     -- Estado ATTACKING
     self.state_machine:add_state("attacking", {
         enter = function()
-            print("Enemigo entrando al estado ATTACKING")
-            print("Enemigo atacando *************************************", self.enemy.movement_pattern)
+            --print("Enemigo entrando al estado ATTACKING")
+            --print("Enemigo atacando *************************************", self.enemy.movement_pattern)
             self.enemy:perform_attack(player_url)
             self.enemy.attack_timer = 0
 
@@ -147,12 +147,12 @@ function init_enemy_state_machine(self)
             self.enemy.attack_timer = self.enemy.attack_timer + dt
             --print("Tiempo de ataque: " .. self.enemy.attack_timer)
             if self.enemy.attack_timer >= self.enemy.attack_cooldown then
-                print("Enemigo atacandoRRRRRRRRRRR *************************************")
+                --print("Enemigo atacandoRRRRRRRRRRR *************************************")
                 self.enemy:perform_attack(player_url)
                 self.enemy.attack_timer = 0
             end
             if self.enemy.movement_pattern ~= hash("hit_and_run") then
-                print("NO ES HIT AND RUNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN *************")
+                --print("NO ES HIT AND RUNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN *************")
                 if not self.enemy:is_player_in_attack_range(player_url) then
                     if self.enemy:is_player_in_range(player_url) then
                         self.state_machine:set_state("chasing")
@@ -161,7 +161,7 @@ function init_enemy_state_machine(self)
                     end
                 end
             else
-                print("ES HIT AND RUNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN *************")
+                --print("ES HIT AND RUNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN *************")
                 self.state_machine:set_state("runaway")
             end
         end,

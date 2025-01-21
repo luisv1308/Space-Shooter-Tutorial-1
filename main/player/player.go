@@ -57,3 +57,21 @@ embedded_components {
   "}\n"
   ""
 }
+embedded_components {
+  id: "rocket_sprite"
+  type: "sprite"
+  data: "default_animation: \"anim\"\n"
+  "material: \"/builtins/materials/sprite.material\"\n"
+  "textures {\n"
+  "  sampler: \"texture_sampler\"\n"
+  "  texture: \"/main/player/tiles/miscellaneus.tilesource\"\n"
+  "}\n"
+  ""
+  position {
+    y: -21.0
+  }
+  scale {
+    x: 3.0
+    y: 3.0
+  }
+}

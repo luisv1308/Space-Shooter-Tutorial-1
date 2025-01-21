@@ -6,5 +6,18 @@ animations {
   id: "idle"
   start_tile: 12
   end_tile: 12
+  fps: 0
+}
+animations {
+  id: "left"
+  start_tile: 11
+  end_tile: 11
+  fps: 0
+}
+animations {
+  id: "right"
+  start_tile: 13
+  end_tile: 13
+  fps: 0
 }
 extrude_borders: 2
