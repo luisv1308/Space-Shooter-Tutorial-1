@@ -1,23 +1,44 @@
 function init(self)
-    self.speed = 125 -- Velocidad del scroll
-    self.height = 256 * 3.2 -- Altura de la imagen escalada
-    self.bgs = { go.get_id("bg1"), go.get_id("bg2") } -- IDs de los dos fondos
+    -- Configura las velocidades para cada capa
+    self.layers = {
+        { id = go.get_id("bg_far"), speed_y = 60, offset_x = -50, speed_x = 5 },
+        { id = go.get_id("bg_mid"), speed_y = 90, offset_x = 30, speed_x = 10 },
+        { id = go.get_id("bg_near_1"), speed_y = 120, offset_x = 70, speed_x = 15 },
+        { id = go.get_id("bg_near_2"), speed_y = 120, offset_x = 70, speed_x = 15 },
+    }
+    self.height = 256 * 3.2
 
-    -- Posicionar los fondos iniciales
-    go.set_position(vmath.vector3(0, 0, -0.5), self.bgs[1])
-    go.set_position(vmath.vector3(0, self.height, -0.5), self.bgs[2])
+    -- Cambia el escalado en el editor o por código
+    go.set_scale(vmath.vector3(1.2, 1.2, 1), "bg_far")
+    go.set_scale(vmath.vector3(1.05, 1.05, 1), "bg_mid")
+    go.set_scale(vmath.vector3(1, 1, 1), "bg_near_1")
+    go.set_scale(vmath.vector3(1, 1, 1), "bg_near_2")
+
+    
+
+    -- Configura posiciones iniciales desplazadas
+    for _, layer in ipairs(self.layers) do
+        local initial_pos = vmath.vector3(layer.offset_x or 0, 0, 0)
+        go.set_position(initial_pos, layer.id)
+    end
+
+    -- Configurar posición inicial para las dos capas cercanas
+    go.set_position(vmath.vector3(0, 0, 0), go.get_id("bg_near_1"))
+    go.set_position(vmath.vector3(0, self.height, 0), go.get_id("bg_near_2"))
 end
 
 function update(self, dt)
-    for _, bg in ipairs(self.bgs) do
-        local pos = go.get_position(bg)
-        pos.y = pos.y - self.speed * dt
+    for _, layer in ipairs(self.layers) do
+        local pos = go.get_position(layer.id)
 
-        -- Resetea la posición cuando sale de la pantalla
+        -- Movimiento en Y
+        pos.y = pos.y - layer.speed_y * dt
         if pos.y < -self.height then
             pos.y = pos.y + self.height * 2
         end
-        pos.z = -0.5
-        go.set_position(pos, bg)
+
+        
+
+        go.set_position(pos, layer.id)
     end
 end

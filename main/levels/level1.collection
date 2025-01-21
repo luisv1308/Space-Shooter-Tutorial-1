@@ -34,7 +34,7 @@ embedded_instances {
   ""
 }
 embedded_instances {
-  id: "bg1"
+  id: "bg_far"
   data: "components {\n"
   "  id: \"background\"\n"
   "  component: \"/main/scripts/background.script\"\n"
@@ -42,7 +42,7 @@ embedded_instances {
   "embedded_components {\n"
   "  id: \"sprite\"\n"
   "  type: \"sprite\"\n"
-  "  data: \"default_animation: \\\"level1\\\"\\n"
+  "  data: \"default_animation: \\\"transparente\\\"\\n"
   "material: \\\"/builtins/materials/sprite.material\\\"\\n"
   "size {\\n"
   "  x: 128.0\\n"
@@ -68,11 +68,41 @@ embedded_instances {
   }
 }
 embedded_instances {
-  id: "bg2"
+  id: "bg_mid"
   data: "embedded_components {\n"
   "  id: \"sprite\"\n"
   "  type: \"sprite\"\n"
-  "  data: \"default_animation: \\\"level1\\\"\\n"
+  "  data: \"default_animation: \\\"transparente2\\\"\\n"
+  "material: \\\"/builtins/materials/sprite.material\\\"\\n"
+  "size {\\n"
+  "  x: 128.0\\n"
+  "  y: 256.0\\n"
+  "}\\n"
+  "textures {\\n"
+  "  sampler: \\\"texture_sampler\\\"\\n"
+  "  texture: \\\"/assets/tiles/background.tilesource\\\"\\n"
+  "}\\n"
+  "\"\n"
+  "  position {\n"
+  "    x: 207.0\n"
+  "    y: 308.0\n"
+  "  }\n"
+  "  scale {\n"
+  "    x: 3.4\n"
+  "    y: 3.2\n"
+  "  }\n"
+  "}\n"
+  ""
+  position {
+    z: -1.0
+  }
+}
+embedded_instances {
+  id: "bg_near"
+  data: "embedded_components {\n"
+  "  id: \"sprite\"\n"
+  "  type: \"sprite\"\n"
+  "  data: \"default_animation: \\\"transparente\\\"\\n"
   "material: \\\"/builtins/materials/sprite.material\\\"\\n"
   "size {\\n"
   "  x: 128.0\\n"

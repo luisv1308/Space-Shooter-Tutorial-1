@@ -7,4 +7,14 @@ animations {
   start_tile: 1
   end_tile: 1
 }
+animations {
+  id: "transparente"
+  start_tile: 5
+  end_tile: 5
+}
+animations {
+  id: "transparente2"
+  start_tile: 6
+  end_tile: 6
+}
 extrude_borders: 2

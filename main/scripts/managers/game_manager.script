@@ -9,7 +9,6 @@ local LEVEL_DATA = {
 }
 
 function init(self)
-    particlefx.play("/stars_fx_go#stars_fx")
     self.current_level = 1
     self.current_level_proxy = nil -- Declaramos explícitamente esta variable
     self.loading = false -- Para evitar cargar niveles mientras otro se está cargando
