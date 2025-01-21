@@ -13,8 +13,8 @@ return {
         -- {type = "v_formation", count = 9},
         -- {type = "double_column", count = 10},
          --{type = "random", count = 0},
-         --{type = "outside_diagonal_left", count = 1, movement_pattern = hash("hit_and_run")
-            --, enemy_type = hash("scout")},
+         {type = "outside_diagonal_left", count = 1, movement_pattern = hash("hit_and_run")
+            , enemy_type = hash("scout")},
          --{type = "outside_diagonal_right", count = 1, movement_pattern = hash("hit_and_run"), 
             --enemy_type = hash("scout")},
     },

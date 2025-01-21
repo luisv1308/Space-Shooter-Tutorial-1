@@ -114,6 +114,7 @@ function ini_state_machine(self)
         end,
         exit = function()
             print("Saliendo del estado MOVING")
+            sprite.play_flipbook(msg.url(self.sprite), "idle")
         end
     })
 
@@ -152,10 +153,13 @@ function handle_movement(self, dt)
     end
     if self.inputs[input_left] then
         move.x = move.x - 1
+        sprite.play_flipbook(msg.url(self.sprite), "left")
     end
     if self.inputs[input_right] then
         move.x = move.x + 1
+        sprite.play_flipbook(msg.url(self.sprite), "right")
     end
+    
 
     -- Solo normalizar si el vector no es cero
     if move.x ~= 0 or move.y ~= 0 then
