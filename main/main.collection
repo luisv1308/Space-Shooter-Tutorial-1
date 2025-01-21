@@ -1,35 +1,20 @@
 name: "main"
 instances {
-  id: "player"
-  prototype: "/main/player/player.go"
-  children: "factories"
-  position {
-    x: 55.0
-    y: 57.0
-  }
-}
-instances {
-  id: "enemy_manager"
-  prototype: "/main/managers/enemy_manager.go"
-}
-instances {
   id: "game_manager"
   prototype: "/main/managers/game_manager.go"
 }
 scale_along_z: 0
 embedded_instances {
-  id: "factories"
+  id: "level1"
   data: "components {\n"
-  "  id: \"bounty_hunter_bullet_factory\"\n"
-  "  component: \"/main/weapons/player/bounty_hunter_bullet_factory.collectionfactory\"\n"
+  "  id: \"proxy_input\"\n"
+  "  component: \"/main/scripts/proxy_input.script\"\n"
   "}\n"
-  "components {\n"
-  "  id: \"robot_bullet_factory\"\n"
-  "  component: \"/main/weapons/player/robot_bullet_factory.collectionfactory\"\n"
-  "}\n"
-  "components {\n"
-  "  id: \"enemy_bullet_1_factory\"\n"
-  "  component: \"/main/weapons/enemies/enemy_bullet_1_factory.collectionfactory\"\n"
+  "embedded_components {\n"
+  "  id: \"proxy\"\n"
+  "  type: \"collectionproxy\"\n"
+  "  data: \"collection: \\\"/main/levels/level1.collection\\\"\\n"
+  "\"\n"
   "}\n"
   ""
 }

@@ -24,6 +24,7 @@ function Enemy.new(properties)
     self.direction = self.direction or 1 -- Si no se pasa, usa 1 por defecto
     self.time = 0 -- Tiempo acumulado para wave
     self.center_screen = vmath.vector3(240, 300, 0)
+    self.level = properties.level or 1
 
     return self
 end
@@ -55,15 +56,15 @@ function Enemy:should_patrol()
 end
 
 -- Verifica si el jugador está dentro del rango de detección
-function Enemy:is_player_in_range()
-    local player_position = self:get_player_position()
+function Enemy:is_player_in_range(player_url)
+    local player_position = self:get_player_position(player_url)
     local distance = vmath.length(player_position - self.position)
     return distance <= self.detection_range
 end
 
 -- Verifica si el jugador está dentro del rango de ataque
-function Enemy:is_player_in_attack_range()
-    local player_position = self:get_player_position()
+function Enemy:is_player_in_attack_range(player_url)
+    local player_position = self:get_player_position(player_url)
     local distance = vmath.length(player_position - self.position)
     return distance <= self.attack_range
 end
@@ -146,15 +147,15 @@ function Enemy:has_reached_target(target)
 end
 
 -- Obtiene la posición del jugador
-function Enemy:get_player_position()
-    return go.get_position("/player") -- Suponiendo que el jugador tiene un ID conocido
+function Enemy:get_player_position(player_url)
+    return go.get_position(player_url) -- Suponiendo que el jugador tiene un ID conocido
 end
 
 -- Realiza el ataque
-function Enemy:perform_attack()
+function Enemy:perform_attack(player_url)
     print("El enemigo está atacando al jugador")
     local my_position = go.get_position()
-    local player_position = self:get_player_position()
+    local player_position = self:get_player_position(player_url)
     -- Dispara al jugador
     if self.weapon then
         self.weapon:fire(my_position, vmath.normalize(player_position - my_position))

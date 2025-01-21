@@ -6,7 +6,7 @@ function init(self)
     print("Enemy manager initialized")
     self.enemies = {} -- Lista para almacenar enemigos activos
     self.spawn_timer = 0
-    self.current_level = 2
+    self.current_level = 1
     self.formation_index = 1
     self.spawn_formations = {}
     -- Cargar niveles de enemigos
@@ -36,6 +36,12 @@ function on_message(self, message_id, message, sender)
     if message_id == hash("level_cleared") then
         self.current_level = self.current_level + 1
         load_level_formations(self, self.current_level)
+    end
+    if message_id == hash("current_level") then
+        -- El nivel actual se encuentra en message.level
+        print("Nivel actual recibido:", message.level)
+        -- Puedes guardar el nivel o realizar alguna acción específica
+        self.current_level = message.level
     end
 end
 

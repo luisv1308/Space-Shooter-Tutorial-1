@@ -12,7 +12,8 @@ function Scout:new(properties)
         attack_power = properties.attack_power or 1,
         position = properties.position or vmath.vector3(0, 650, 0),
         initial_position = properties.position or vmath.vector3(0, 650, 0),
-        weapon = properties.weapon or EnemyBullet1:new("/factories#enemy_bullet_1_factory"),
+        level = properties.level or 1,
+        weapon = properties.weapon or EnemyBullet1:new(msg.url("/factories#enemy_bullet_1_factory")),
         movement_pattern = properties.movement_pattern or "linear",
         amplitude = properties.amplitude or 2
     })

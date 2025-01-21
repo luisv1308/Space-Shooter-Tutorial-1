@@ -1,16 +1,21 @@
 -- game_manager.script
 local formations_data  = require "main/scripts/formations"
+local dispatcher = require "main/scripts/dispatcher"
 
 local LEVEL_DATA = {
-    { enemy_count = 5 },
-    { enemy_count = 10 },
-    { enemy_count = 15 }
+    { enemy_count = 5, proxy = "/level1#proxy" },
+    { enemy_count = 10, proxy = "/level2#proxy" },
+    { enemy_count = 15, proxy = "/level3#proxy" }
 }
 
 function init(self)
     self.current_level = 1
+    self.current_level_proxy = nil -- Declaramos explícitamente esta variable
+    self.loading = false -- Para evitar cargar niveles mientras otro se está cargando
+    load_level(self, self.current_level)
     load_level_formations(self, self.current_level)
-    msg.post("enemy_manager", "spawn_enemies", { level = self.current_level })
+    --msg.post("@broadcast", "current_level", { level = self.current_level })
+    --msg.post("/level1/enemy_manager", "spawn_enemies", { level = self.current_level })
 end
 
 function update(self, dt)
@@ -26,6 +31,29 @@ function on_message(self, message_id, message, sender)
             print("¡Juego completado!")
         end
     end
+    if message_id == hash("level_cleared") then
+        self.current_level = self.current_level + 1
+        if self.current_level <= #LEVEL_DATA then
+            load_level(self, self.current_level)
+        else
+            print("¡Juego completado!")
+        end
+    elseif message_id == hash("proxy_loaded") then
+        -- Activar la colección del nivel cargado
+        msg.post(sender, "init")
+        msg.post(sender, "enable")
+        self.loading = false
+        -- Guardar la URL base del nivel cargado
+        self.current_level_base = msg.url(sender)
+        print("Nivel cargado:", self.current_level_base.socket)
+        --dispatcher.broadcast(hash("current_level"), { level = self.current_level, base = self.current_level_base.socket })
+       -- msg.post("@broadcast", "current_level", { level = self.current_level, base = self.current_level_base.socket })
+        print("Nivel cargado y activado:", self.current_level)
+    elseif message_id == hash("proxy_unloaded") then
+        -- Una vez descargado, cargar el nuevo nivel
+        local level = message.level
+        load_level(self, level)
+    end
 end
 
 function load_level_formations(self, level)
@@ -34,4 +62,23 @@ end
 
 function get_spawn_formations(self, level)
     return self.spawn_formations
+end
+
+function load_level(self, level)
+    if self.loading then
+        print("Ya se está cargando un nivel.")
+        return
+    end
+
+    self.loading = true
+
+    -- Descargar el nivel actual si existe
+    if self.current_level_proxy then
+        msg.post(self.current_level_proxy, "unload")
+    else
+        -- Si no hay nivel cargado, cargar directamente el nuevo nivel
+        local proxy = LEVEL_DATA[level].proxy
+        self.current_level_proxy = proxy
+        msg.post(proxy, "load")
+    end
 end

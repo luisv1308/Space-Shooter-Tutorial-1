@@ -1,0 +1,10 @@
+-- proxy_input.script
+function init(self)
+	-- Adquirir el enfoque de entrada
+	msg.post(".", "acquire_input_focus")
+end
+
+function final(self)
+	-- Liberar el enfoque de entrada al eliminar el objeto
+	msg.post(".", "release_input_focus")
+end

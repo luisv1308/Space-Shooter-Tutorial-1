@@ -3,20 +3,28 @@ local StateMachine = require "main/scripts/state_machine" -- Tu máquina de esta
 local enemy_info_manager = require "main/scripts/managers/enemy_info_manager"
 -- Enemigo
 local EnemyScout = require "main/scripts/enemies/enemy_scout"
+-- Player manager
+local PlayerManager = require "main/scripts/managers/player_info_manager"
+
+local player_url = nil
 
 -- Propiedades del enemigo
 go.property("enemy_type", hash("scout"))
 go.property("initial_position", vmath.vector3(0, 0, 0))
 go.property("movement_pattern", hash("linear"))
+go.property("level", 1)
 
 function init(self)
+    -- Obtén la URL del jugador desde el módulo
+    player_url = PlayerManager.get_player()
     --self.target = self.target or nil -- Puede ser el jugador u otro objetivo
 	-- Inicializar enemigo por defacto
 	if self.enemy_type == hash("scout") then
         local props = {
             id = go.get_id(),
             movement_pattern = self.movement_pattern,
-            position = self.initial_position
+            position = self.initial_position,
+            level = self.level
         }
 		self.enemy = EnemyScout:new(props)
 	end
@@ -97,7 +105,7 @@ function init_enemy_state_machine(self)
         update = function(dt)
             self.enemy:apply_movement_pattern(dt)
             if self.enemy.movement_pattern ~= hash("hit_and_run") then
-                if self.enemy:is_player_in_attack_range(self) then
+                if self.enemy:is_player_in_attack_range(player_url) then
                     self.state_machine:set_state("attacking")
                 end
             end
@@ -125,7 +133,7 @@ function init_enemy_state_machine(self)
         enter = function()
             print("Enemigo entrando al estado ATTACKING")
             print("Enemigo atacando *************************************", self.enemy.movement_pattern)
-            self.enemy:perform_attack()
+            self.enemy:perform_attack(player_url)
             self.enemy.attack_timer = 0
 
         end,
@@ -140,13 +148,13 @@ function init_enemy_state_machine(self)
             --print("Tiempo de ataque: " .. self.enemy.attack_timer)
             if self.enemy.attack_timer >= self.enemy.attack_cooldown then
                 print("Enemigo atacandoRRRRRRRRRRR *************************************")
-                self.enemy:perform_attack()
+                self.enemy:perform_attack(player_url)
                 self.enemy.attack_timer = 0
             end
             if self.enemy.movement_pattern ~= hash("hit_and_run") then
                 print("NO ES HIT AND RUNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN *************")
-                if not self.enemy:is_player_in_attack_range(self) then
-                    if self.enemy:is_player_in_range(self) then
+                if not self.enemy:is_player_in_attack_range(player_url) then
+                    if self.enemy:is_player_in_range(player_url) then
                         self.state_machine:set_state("chasing")
                     else
                         self.state_machine:set_state("chasing")
@@ -203,7 +211,7 @@ function init_enemy_state_machine(self)
         update = function(dt)
             if self.enemy.health <= 0 or self.enemy:is_out_of_bounds() then
                 -- Enviar mensaje a enemy manager
-                msg.post("enemy_manager", "remove_enemy", { enemy = go.get_id() })
+                msg.post(msg.url("/enemy_manager#enemy_manager"), "remove_enemy", { enemy = go.get_id() })  
                 go.delete()
             end
         end,

@@ -1,0 +1,31 @@
+name: "level1"
+instances {
+  id: "enemy_manager"
+  prototype: "/main/managers/enemy_manager.go"
+}
+instances {
+  id: "player"
+  prototype: "/main/player/player.go"
+  children: "factories"
+  position {
+    x: 55.0
+    y: 57.0
+  }
+}
+scale_along_z: 0
+embedded_instances {
+  id: "factories"
+  data: "components {\n"
+  "  id: \"bounty_hunter_bullet_factory\"\n"
+  "  component: \"/main/weapons/player/bounty_hunter_bullet_factory.collectionfactory\"\n"
+  "}\n"
+  "components {\n"
+  "  id: \"enemy_bullet_1_factory\"\n"
+  "  component: \"/main/weapons/enemies/enemy_bullet_1_factory.collectionfactory\"\n"
+  "}\n"
+  "components {\n"
+  "  id: \"robot_bullet_factory\"\n"
+  "  component: \"/main/weapons/player/robot_bullet_factory.collectionfactory\"\n"
+  "}\n"
+  ""
+}

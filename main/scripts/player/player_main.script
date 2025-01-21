@@ -1,5 +1,8 @@
 local StateMachine = require "main/scripts/state_machine"
 
+-- Player manager
+local PlayerManager = require "main/scripts/managers/player_info_manager"
+
 -- Jugadores
 local BountyHunter = require "main/scripts/player/bounty_hunter"
 local Robot = require "main/scripts/player/robot"
@@ -18,7 +21,14 @@ local input_up = hash("up")
 local input_down = hash("down")
 local input_shoot = hash("shoot")
 
+
 function init(self)
+    -- Registra la URL del jugador en el módulo
+    PlayerManager.set_player(msg.url())
+
+    self.current_level = 1
+    self.current_level_base = nil
+
     msg.post("#bounty_hunter_sprite", "disable")
     msg.post("#robot_sprite", "disable")
     -- Adquirir el foco de entrada
@@ -30,11 +40,11 @@ function init(self)
     if selected_character == "bounty_hunter" then
         self.player = BountyHunter:new()
         self.sprite = "#bounty_hunter_sprite" -- Cambia el sprite
-        self.weapon = BountyHunterWeapon:new("/factories#bounty_hunter_bullet_factory")
+        self.weapon = BountyHunterWeapon:new(msg.url("/factories#bounty_hunter_bullet_factory"))
     elseif selected_character == "robot" then
         self.player = Robot:new()
         self.sprite = "#robot_sprite" -- Cambia el sprite
-        self.weapon = RobotWeapon:new("/factories#robot_bullet_factory")
+        self.weapon = RobotWeapon:new(msg.url("/factories#robot_bullet_factory"))
     end
     msg.post(self.sprite, "enable")
     print("Jugador creado: " .. self.player.name)
@@ -43,8 +53,20 @@ function init(self)
     -- Configuración inicial del jugador
     self.position = go.get_position()
     self.inputs = {} -- Tabla para rastrear inputs
-    print("ID del jugador: ", go.get_id("/bounty_hunter_bullet_factory"))
+    --print("ID del jugador: ", go.get_id("/bounty_hunter_bullet_factory"))
 
+end
+
+function on_message(self, message_id, message, sender)
+    if message_id == hash("current_level") then
+        -- El nivel actual se encuentra en message.level
+        print("Nivel actual recibido: zzzzzzzzzzzzzzzz", message.level)
+        -- Puedes guardar el nivel o realizar alguna acción específica
+        self.current_level = message.level
+        self.current_level_base = message.base
+        print("Nivel cargado:", self.current_level_base)
+        --msg.post("@broadcast", "current_level", { level = self.current_level, base = self.current_level_base })
+    end
 end
 
 function update(self, dt)
