@@ -1,9 +1,9 @@
 return {
     [1] = {
-        {type = "line_horizontal", count = 10, movement_pattern = hash("lineal"), 
+        {type = "line_horizontal", count = 5, movement_pattern = hash("lineal"), 
             enemy_type = hash("scout")},
-        {type = "circle", count = 8, movement_pattern = hash("lineal"), 
-            enemy_type = hash("scout")},
+        --{type = "circle", count = 8, movement_pattern = hash("lineal"), 
+           -- enemy_type = hash("scout")},
         -- {type = "triangle", count = 9, movement_pattern = hash("lineal")},
          -- {type = "zigzag", count = 10},
         -- {type = "diagonal", count = 5},
@@ -13,10 +13,10 @@ return {
         -- {type = "v_formation", count = 9},
         -- {type = "double_column", count = 10},
          --{type = "random", count = 0},
-         {type = "outside_diagonal_left", count = 1, movement_pattern = hash("hit_and_run")
-            , enemy_type = hash("scout")},
-         {type = "outside_diagonal_right", count = 1, movement_pattern = hash("hit_and_run"), 
-            enemy_type = hash("scout")},
+         --{type = "outside_diagonal_left", count = 1, movement_pattern = hash("hit_and_run")
+            --, enemy_type = hash("scout")},
+         --{type = "outside_diagonal_right", count = 1, movement_pattern = hash("hit_and_run"), 
+            --enemy_type = hash("scout")},
     },
     [2] = {
         --{type = "line_horizontal", count = 10, movement_pattern = hash("lineal"), 

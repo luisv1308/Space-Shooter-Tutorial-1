@@ -17,7 +17,7 @@ function Enemy.new(properties)
     self.initial_position = properties.position or vmath.vector3(0, 500, 0)
     self.current_patrol_index = 0
     self.attack_timer = 0
-    self.attack_cooldown = 0.5
+    self.attack_cooldown = 2
     self.weapon = properties.weapon or nil
     self.movement_pattern = properties.movement_pattern or "linear"
     self.amplitude = properties.amplitude or 5
@@ -156,9 +156,10 @@ function Enemy:perform_attack(player_url)
     print("El enemigo está atacando al jugador")
     local my_position = go.get_position()
     local player_position = self:get_player_position(player_url)
+    print("Posicion del jugador: " .. player_position.x .. ", " .. player_position.y)
     -- Dispara al jugador
     if self.weapon then
-        self.weapon:fire(my_position, vmath.normalize(player_position - my_position))
+        self.weapon:fire(my_position, player_position)
     end
     --msg.post("player", "take_damage", { damage = self.attack_damage })
 end

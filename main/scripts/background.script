@@ -9,12 +9,10 @@ function init(self)
     self.height = 256 * 3.2
 
     -- Cambia el escalado en el editor o por código
-    go.set_scale(vmath.vector3(1.2, 1.2, 1), "bg_far")
-    go.set_scale(vmath.vector3(1.05, 1.05, 1), "bg_mid")
-    go.set_scale(vmath.vector3(1, 1, 1), "bg_near_1")
-    go.set_scale(vmath.vector3(1, 1, 1), "bg_near_2")
-
-    
+    go.set_scale(vmath.vector3(1, 1, 1), "bg_far")
+    go.set_scale(vmath.vector3(1.1, 1.1, 1), "bg_mid")
+    go.set_scale(vmath.vector3(1.2, 1.2, 1), "bg_near_1")
+    go.set_scale(vmath.vector3(1.2, 1.2, 1), "bg_near_2")
 
     -- Configura posiciones iniciales desplazadas
     for _, layer in ipairs(self.layers) do
@@ -23,8 +21,8 @@ function init(self)
     end
 
     -- Configurar posición inicial para las dos capas cercanas
-    go.set_position(vmath.vector3(0, 0, 0), go.get_id("bg_near_1"))
-    go.set_position(vmath.vector3(0, self.height, 0), go.get_id("bg_near_2"))
+    go.set_position(vmath.vector3(70, 0, 0), go.get_id("bg_near_1"))
+    go.set_position(vmath.vector3(70, self.height, 0), go.get_id("bg_near_2"))
 end
 
 function update(self, dt)

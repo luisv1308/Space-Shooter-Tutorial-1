@@ -1,6 +1,6 @@
 components {
   id: "bullet"
-  component: "/main/scripts/weapons/bullet.script"
+  component: "/main/scripts/weapons/bullet_enemy.script"
 }
 embedded_components {
   id: "sprite"

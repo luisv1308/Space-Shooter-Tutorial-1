@@ -138,9 +138,9 @@ function init_enemy_state_machine(self)
 
         end,
         update = function(dt)
-            print("Enemigo atacando TEST *************************************", self.enemy.movement_pattern == hash("hit_and_run"))
+            --print("Enemigo atacando TEST *************************************", self.enemy.movement_pattern == hash("hit_and_run"))
             if self.enemy.movement_pattern ~= hash("hit_and_run") then
-                print("NO ES HIT AND RUNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN")
+                --print("NO ES HIT AND RUNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN")
                 self.enemy:apply_movement_pattern(dt)
             end
             

@@ -9,11 +9,13 @@ function init(self)
 	print("ID del proyectil: ", go.get_id())
 	print("Velocidad del proyectil: ", self.speed)
 	print("Direccion del proyectil: ", self.direction)
+    local position = go.get_position()
+    local player_position = self.direction
+    self.new_direction = vmath.normalize(player_position - position)
 end
 
 function update(self, dt)
-    local position = go.get_position()
-    position = position + self.direction * self.speed * dt
+    local position = go.get_position() + self.new_direction * self.speed * dt
     position.z = 1
     go.set_position(position)
 
