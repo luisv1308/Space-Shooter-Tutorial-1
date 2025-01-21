@@ -1,0 +1,10 @@
+image: "/assets/SpaceShooterAssetPack_BackGrounds.png"
+tile_width: 128
+tile_height: 256
+collision_groups: "default"
+animations {
+  id: "level1"
+  start_tile: 1
+  end_tile: 1
+}
+extrude_borders: 2

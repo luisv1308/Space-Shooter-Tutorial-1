@@ -18,3 +18,15 @@ embedded_instances {
   "}\n"
   ""
 }
+embedded_instances {
+  id: "stars_fx_go"
+  data: "components {\n"
+  "  id: \"stars_fx\"\n"
+  "  component: \"/main/particles/stars_fx.particlefx\"\n"
+  "}\n"
+  ""
+  position {
+    x: 240.0
+    y: 800.0
+  }
+}

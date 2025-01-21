@@ -67,7 +67,7 @@ function spawn_enemies_formations(self, formation_type, count, level, movement_p
             local angle_step = (2 * math.pi) / count
             local angle = (i - 1) * angle_step
             x = screen_width / 2 + math.cos(angle) * formation_radius
-            y = screen_height + 10  + math.sin(angle) * formation_radius
+            y = screen_height + 450  + math.sin(angle) * formation_radius
 
         elseif formation_type == "triangle" then
             local row = math.floor((math.sqrt(8 * i + 1) - 1) / 2)

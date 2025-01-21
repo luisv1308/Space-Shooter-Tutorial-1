@@ -1,0 +1,23 @@
+function init(self)
+    self.speed = 125 -- Velocidad del scroll
+    self.height = 256 * 3.2 -- Altura de la imagen escalada
+    self.bgs = { go.get_id("bg1"), go.get_id("bg2") } -- IDs de los dos fondos
+
+    -- Posicionar los fondos iniciales
+    go.set_position(vmath.vector3(0, 0, -0.5), self.bgs[1])
+    go.set_position(vmath.vector3(0, self.height, -0.5), self.bgs[2])
+end
+
+function update(self, dt)
+    for _, bg in ipairs(self.bgs) do
+        local pos = go.get_position(bg)
+        pos.y = pos.y - self.speed * dt
+
+        -- Resetea la posición cuando sale de la pantalla
+        if pos.y < -self.height then
+            pos.y = pos.y + self.height * 2
+        end
+        pos.z = -0.5
+        go.set_position(pos, bg)
+    end
+end

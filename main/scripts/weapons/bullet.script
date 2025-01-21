@@ -14,6 +14,7 @@ end
 function update(self, dt)
     local position = go.get_position()
     position = position + self.direction * self.speed * dt
+    position.z = 1
     go.set_position(position)
 
     -- Eliminar el proyectil si sale de la pantalla

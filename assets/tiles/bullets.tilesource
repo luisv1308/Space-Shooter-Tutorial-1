@@ -12,4 +12,14 @@ animations {
   start_tile: 2
   end_tile: 2
 }
+animations {
+  id: "bullet3"
+  start_tile: 22
+  end_tile: 22
+}
+animations {
+  id: "bullet4"
+  start_tile: 15
+  end_tile: 15
+}
 extrude_borders: 2

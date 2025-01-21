@@ -8,7 +8,7 @@ setmetatable(Scout, { __index = Enemy })
 function Scout:new(properties)
     local self = Enemy.new({
         health = properties.health or 5,
-        speed = properties.speed or 100,
+        speed = properties.speed or 150,
         attack_power = properties.attack_power or 1,
         position = properties.position or vmath.vector3(0, 650, 0),
         initial_position = properties.position or vmath.vector3(0, 650, 0),
