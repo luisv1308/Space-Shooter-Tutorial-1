@@ -9,22 +9,32 @@ function init(self)
     self.current_level = 1
     self.formation_index = 1
     self.spawn_formations = {}
+    self.counter = 0
     -- Cargar niveles de enemigos
     load_level_formations(self, self.current_level)
 end
 
 function update(self, dt)
     self.spawn_timer = self.spawn_timer + dt
-    if self.spawn_timer >= 5 then -- Cada 5 segundos
-        self.spawn_formations = Utilities:shuffle_table(self.spawn_formations)
+    local formations_count = #self.spawn_formations
+    
+    if self.spawn_timer >= 5 and self.counter < formations_count then -- Cada 5 segundos
+        --self.spawn_formations = Utilities:shuffle_table(self.spawn_formations)
+
         local formation = self.spawn_formations[self.formation_index]
         if formation then
             spawn_enemies_formations(self, formation.type, formation.count, 
-                self.current_level, formation.movement_pattern
+                self.current_level, formation.movement_pattern, formation.enemy_type
             )
+            if formation.other ~= nil then
+                spawn_enemies_formations(self, formation.other.type, formation.other.count, 
+                    self.current_level, formation.other.movement_pattern, formation.other.enemy_type
+                )
+            end
             self.formation_index = self.formation_index % #self.spawn_formations + 1
         end
         self.spawn_timer = 0
+        self.counter = self.counter + 1
     end
 end
 
@@ -125,7 +135,7 @@ function spawn_enemies_formations(self, formation_type, count, level, movement_p
             local mid = math.ceil(count / 2)
             local offset = math.abs(i - mid)
             x = screen_width / 2 + (i - mid) * spacing_x
-            y = screen_height + 10 - offset * spacing_y
+            y = screen_height + 350 - offset * spacing_y
         elseif formation_type == "outside_diagonal_left" then
             -- x fuera de la pantalla a la izquierda
             x = -100
@@ -144,7 +154,9 @@ function spawn_enemies_formations(self, formation_type, count, level, movement_p
             local col = (i - 1) % cols
             x = 40 + col * spacing_x
             y = screen_height + 200 - row * spacing_y
-           
+        elseif formation_type == "side_by_side" then
+            y = 360 -- Altura inicial (ajusta según tu pantalla)
+            x = -200 + (i * spacing_x) -- Fuera del lado izquierdo de la pantalla
         end
 
         if x and y then

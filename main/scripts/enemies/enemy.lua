@@ -42,7 +42,7 @@ end
 
 -- Checar si esta fuera de la pantalla
 function Enemy:is_out_of_bounds()
-    return self.position.y < -100 or self.position.y > 1200
+    return (self.position.x < -400 or self.position.x > 700) or self.position.y < -100 or self.position.y > 1200
 end
 
 function Enemy:die()
@@ -173,6 +173,8 @@ function  Enemy:apply_movement_pattern(dt)
         wave_movement(self, dt)
     elseif self.movement_pattern == hash(string.lower("hit_and_run")) then
         self:move_towards(self.center_screen, dt)
+    elseif self.movement_pattern == hash(string.lower("side_by_side")) then
+        side_by_side_movement(self, dt)
     end
     go.set_position(self.position, go.get_id())
 end
@@ -204,6 +206,13 @@ function wave_movement(self, dt)
     self.time = self.time + dt
 
     go.set_position(self.position)
+end
+
+function side_by_side_movement(self, dt)
+    --print("Posicion del enemigo: " .. self.position.x .. ", " .. self.position.y)
+    self.position.x = self.position.x + self.speed * dt
+    go.set_position(self.position)
+    
 end
 
 function does_object_exist(id)

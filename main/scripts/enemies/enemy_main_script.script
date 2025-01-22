@@ -3,6 +3,7 @@ local StateMachine = require "main/scripts/state_machine" -- Tu máquina de esta
 local enemy_info_manager = require "main/scripts/managers/enemy_info_manager"
 -- Enemigo
 local EnemyScout = require "main/scripts/enemies/enemy_scout"
+local EnemyFighter = require "main/scripts/enemies/enemy_fighter"
 -- Player manager
 local PlayerManager = require "main/scripts/managers/player_info_manager"
 
@@ -15,11 +16,19 @@ go.property("movement_pattern", hash("linear"))
 go.property("level", 1)
 
 function init(self)
+    print("Tipo enemigo", self.initial_position, self.movement_pattern, self.level)
+    -- Desactivar los sprites
+    msg.post("#sprite_scout", "disable")
+    msg.post("#sprite_fighter", "disable")
+    -- Enemy URL
+    self.url = go.get_id()
     -- Obtén la URL del jugador desde el módulo
     player_url = PlayerManager.get_player()
     --self.target = self.target or nil -- Puede ser el jugador u otro objetivo
 	-- Inicializar enemigo por defacto
 	if self.enemy_type == hash("scout") then
+        self.enemy_type_name = "scout"
+        msg.post("#sprite_scout", "enable")
         local props = {
             id = go.get_id(),
             movement_pattern = self.movement_pattern,
@@ -27,7 +36,17 @@ function init(self)
             level = self.level
         }
 		self.enemy = EnemyScout:new(props)
-	end
+	elseif self.enemy_type == hash("fighter") then
+        self.enemy_type_name = "fighter"
+        msg.post("#sprite_fighter", "enable")
+        local props = {
+            id = go.get_id(),
+            movement_pattern = self.movement_pattern,
+            position = self.initial_position,
+            level = self.level
+        }
+        self.enemy = EnemyFighter:new(props)
+    end
 
     -- Inicializar la máquina de estados
     init_enemy_state_machine(self)
@@ -193,10 +212,10 @@ function init_enemy_state_machine(self)
         end,
         update = function(dt)
             self.enemy:move_to_initial_position(dt)
-            -- if self.enemy:has_reached_target(self.enemy.initial_position) then
-            --     self.enemy.health = 0
-            --     self.state_machine:set_state("dead")
-            -- end
+            if self.enemy:has_reached_target(self.enemy.initial_position) then
+                self.enemy.health = 0
+                self.state_machine:set_state("dead")
+            end
         end,
         exit = function()
             print("Enemigo saliendo del estado RUN")
@@ -207,13 +226,33 @@ function init_enemy_state_machine(self)
     self.state_machine:add_state("dead", {
         enter = function()
             print("Enemigo entrando al estado DEAD")
-        end,
-        update = function(dt)
             if self.enemy.health <= 0 or self.enemy:is_out_of_bounds() then
                 -- Enviar mensaje a enemy manager
-                msg.post(msg.url("/enemy_manager#enemy_manager"), "remove_enemy", { enemy = go.get_id() })  
-                go.delete()
+                msg.post(msg.url("/enemy_manager#enemy_manager"), "remove_enemy", { enemy = go.get_id() })
+                if self.enemy:is_out_of_bounds() then
+                    go.delete()
+                else 
+                    local pos = go.get_position() -- Obtén la posición del objeto destruido
+                    print("ESTOY FUERAAAAAAAAAAAA")
+                    -- Desactivar el sprite
+                    -- Construye el hash dinámico
+                    local sprite_id = "sprite_" .. self.enemy_type_name
+                    -- Envía el mensaje al sprite
+                    msg.post("#" .. sprite_id, "disable")
+                    -- Props para enviar
+                    props = {
+                        enemy = self.url
+                    }
+                    factory.create("#explosion_factory", pos, nil, props)
+                    timer.delay(0.2, false, function()
+                        -- Elimina el objeto actual
+                        go.delete()
+                    end)
+                end
             end
+        end,
+        update = function(dt)
+            
         end,
         exit = function()
             print("Enemigo saliendo del estado DEAD")

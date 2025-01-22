@@ -5,7 +5,7 @@ components {
 embedded_components {
   id: "sprite_scout"
   type: "sprite"
-  data: "default_animation: \"idle\"\n"
+  data: "default_animation: \"scout\"\n"
   "material: \"/builtins/materials/sprite.material\"\n"
   "textures {\n"
   "  sampler: \"texture_sampler\"\n"
@@ -47,4 +47,29 @@ embedded_components {
   "  data: 10.0\n"
   "}\n"
   ""
+}
+embedded_components {
+  id: "explosion_factory"
+  type: "factory"
+  data: "prototype: \"/main/misc/explotion.go\"\n"
+  ""
+}
+embedded_components {
+  id: "sprite_fighter"
+  type: "sprite"
+  data: "default_animation: \"fighter\"\n"
+  "material: \"/builtins/materials/sprite.material\"\n"
+  "size {\n"
+  "  x: 8.0\n"
+  "  y: 8.0\n"
+  "}\n"
+  "textures {\n"
+  "  sampler: \"texture_sampler\"\n"
+  "  texture: \"/main/enemies/tiles/enemy_scout_tilesource.tilesource\"\n"
+  "}\n"
+  ""
+  scale {
+    x: 3.0
+    y: 3.0
+  }
 }

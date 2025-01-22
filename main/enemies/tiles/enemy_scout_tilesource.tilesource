@@ -3,7 +3,12 @@ tile_width: 8
 tile_height: 8
 collision_groups: "default"
 animations {
-  id: "idle"
+  id: "fighter"
+  start_tile: 6
+  end_tile: 6
+}
+animations {
+  id: "scout"
   start_tile: 5
   end_tile: 5
 }

@@ -86,6 +86,7 @@ function ini_state_machine(self)
     self.state_machine:add_state("idle", {
         enter = function()
             print("Entrando al estado IDLE")
+            sprite.play_flipbook(msg.url(self.sprite), "idle")
         end,
         update = function(dt)
             if has_movement_input(self) then

@@ -9,4 +9,23 @@ animations {
   playback: PLAYBACK_LOOP_FORWARD
   fps: 10
 }
+animations {
+  id: "explotion"
+  start_tile: 89
+  end_tile: 91
+  playback: PLAYBACK_ONCE_PINGPONG
+  fps: 6
+}
+animations {
+  id: "explotion_blue"
+  start_tile: 102
+  end_tile: 104
+  fps: 6
+}
+animations {
+  id: "explotion_purple"
+  start_tile: 85
+  end_tile: 87
+  fps: 6
+}
 extrude_borders: 2
