@@ -157,7 +157,3 @@ embedded_instances {
     z: -1.0
   }
 }
-embedded_instances {
-  id: "go"
-  data: ""
-}

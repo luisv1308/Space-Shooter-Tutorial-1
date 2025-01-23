@@ -244,7 +244,8 @@ function init_enemy_state_machine(self)
                     msg.post("#" .. sprite_id, "disable")
                     -- Props para enviar
                     props = {
-                        enemy = self.url
+                        enemy = self.url,
+                        animation = hash("explotion")
                     }
                     factory.create("#explosion_factory", pos, nil, props)
                     timer.delay(0.2, false, function()

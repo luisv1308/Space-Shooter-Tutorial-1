@@ -1,5 +1,8 @@
+local Config = require "main/config"
 local enemy_info_manager = require "main/scripts/managers/enemy_info_manager"
 local Utilities = require "main/scripts/utilities"
+local SMALL_ASTEROID_FACTORY = "#small_asteroid_factory"
+
 
 -- enemy_manager.script
 function init(self)
@@ -10,8 +13,14 @@ function init(self)
     self.formation_index = 1
     self.spawn_formations = {}
     self.counter = 0
+    -- Asteroides
+    self.asteroids_total = 1
+    self.asteroids_timer = 0 -- Temporizador inicial
+    self.asteroids_interval = 10 -- Intervalo en segundos
+
     -- Cargar niveles de enemigos
     load_level_formations(self, self.current_level)
+
 end
 
 function update(self, dt)
@@ -37,6 +46,24 @@ function update(self, dt)
         self.spawn_timer = 0
         self.counter = self.counter + 1
     end
+
+    -- Lanzar asteroides
+    if self.asteroids_total > 0 then
+        print("Spawning asteroidszzzzzzzzzzzzzzzzzzzzzzzz", self.asteroids_total)
+        spawn_asteroids(self, self.current_level)
+        self.asteroids_total = self.asteroids_total - 1
+    end
+
+    -- Temporizador asteroides
+    -- Incrementar el temporizador
+    self.asteroids_timer = self.asteroids_timer + dt
+
+    -- Verificar si ha pasado el intervalo
+    if self.asteroids_timer >= self.asteroids_interval then
+        self.asteroids_timer = self.asteroids_timer - self.asteroids_interval -- Reiniciar el temporizador
+        self.asteroids_total = self.asteroids_total + 1 -- Cambiar la variable
+        print("Variable actual:", self.asteroids_total)
+    end
 end
 
 function on_message(self, message_id, message, sender)
@@ -53,6 +80,10 @@ function on_message(self, message_id, message, sender)
         print("Nivel actual recibido:", message.level)
         -- Puedes guardar el nivel o realizar alguna acción específica
         self.current_level = message.level
+    end
+    if message_id == hash("create_small_asteroids") then
+        -- Crear asteroides pequeños
+        create_small_asteroids(self, message.position, message.count)
     end
 end
 
@@ -176,6 +207,29 @@ function spawn_enemies_formations(self, formation_type, count, level, movement_p
             table.insert(self.enemies, enemy)
             enemy_info_manager.add_enemy(enemy)
         end
+    end
+end
+
+function spawn_asteroids(self, level)
+    print("Spawning asteroids")
+    level = level * 2
+    for i = 1, level do
+        local x = math.random(40, Config.screen_width - 40)
+        local y = math.random(Config.screen_height + 50, Config.screen_height + 100)
+        local enemy = factory.create("#factory_asteroid", vmath.vector3(x, y, 0), nil, {
+    
+        })
+        table.insert(self.enemies, enemy)
+        enemy_info_manager.add_enemy(enemy)
+    end
+end
+
+function create_small_asteroids(self, position, count)
+    for i = 1, count do
+        -- Generar asteroides pequeños en posiciones aleatorias cercanas
+        local offset = vmath.vector3(math.random(-10, 10), math.random(-10, 10), 0)
+        local asteroid = factory.create(SMALL_ASTEROID_FACTORY, position + offset)
+        table.insert(self.enemies, asteroid)
     end
 end
 

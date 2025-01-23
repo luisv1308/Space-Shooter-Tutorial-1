@@ -1,0 +1,10 @@
+image: "/assets/SpaceShooterAssetPack_Miscellaneous.png"
+tile_width: 8
+tile_height: 8
+collision_groups: "default"
+animations {
+  id: "asteroid_small"
+  start_tile: 41
+  end_tile: 41
+}
+extrude_borders: 2

@@ -5,7 +5,7 @@ components {
 embedded_components {
   id: "sprite"
   type: "sprite"
-  data: "default_animation: \"explotion\"\n"
+  data: "default_animation: \"explotion_blue\"\n"
   "material: \"/builtins/materials/sprite.material\"\n"
   "textures {\n"
   "  sampler: \"texture_sampler\"\n"
@@ -16,7 +16,7 @@ embedded_components {
     z: -0.6
   }
   scale {
-    x: 3.0
-    y: 3.0
+    x: 5.0
+    y: 5.0
   }
 }

@@ -1,0 +1,55 @@
+local Config = require "main/config"
+
+function init(self)
+    self.speed = math.random(100, 200) -- Velocidad aleatoria
+    -- Generar una dirección aleatoria
+    self.direction = vmath.vector3(
+        math.random() * 2 - 1, -- Número aleatorio entre -1 y 1
+        math.random() * 2 - 1, -- Número aleatorio entre -1 y 1
+        0
+    )
+
+    -- Evitar el vector nulo
+    if self.direction.x == 0 and self.direction.y == 0 then
+        self.direction = vmath.vector3(0, -1, 0) -- Dirección predeterminada
+    else
+        self.direction = vmath.normalize(self.direction) -- Normalizar el vector
+    end
+end
+
+function update(self, dt)
+    -- Mover el asteroide pequeño
+    local pos = go.get_position()
+    
+    -- Verificar que los valores sean válidos
+    if not self.direction or not self.speed or not dt then
+        print("Error: Valores inválidos - Dirección:", self.direction, "Velocidad:", self.speed, "dt:", dt)
+        return
+    end
+    
+    pos = pos + self.direction * self.speed * dt
+    go.set_position(pos)
+
+
+    -- Verificar si el asteroide está fuera de la pantalla
+    if pos.x < -50 or pos.x > Config.screen_width + 50 or
+       pos.y < -50 or pos.y > Config.screen_height + 50 then
+        go.delete() -- Destruir el asteroide
+    end
+end
+
+function on_message(self, message_id, message, sender)
+    if message_id == hash("collision_response") then
+        -- Destruir el asteroide pequeño al ser golpeado
+        call_explotion(self)
+        go.delete()
+    end
+end
+
+function call_explotion(self)
+    local pos = go.get_position()
+    local props = {
+        animation = hash("explotion")
+    }
+    factory.create("#explosion_factory", pos, nil, props)
+end

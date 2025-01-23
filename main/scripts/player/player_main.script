@@ -115,7 +115,7 @@ function ini_state_machine(self)
     -- Estado IDLE
     self.state_machine:add_state("idle", {
         enter = function()
-            print("Entrando al estado IDLE")
+            --print("Entrando al estado IDLE")
             sprite.play_flipbook(msg.url(self.sprite), "idle")
         end,
         update = function(dt)
@@ -126,14 +126,14 @@ function ini_state_machine(self)
             end
         end,
         exit = function()
-            print("Saliendo del estado IDLE")
+            --print("Saliendo del estado IDLE")
         end
     })
 
     -- Estado MOVING
     self.state_machine:add_state("moving", {
         enter = function()
-            print("Entrando al estado MOVING")
+            --print("Entrando al estado MOVING")
         end,
         update = function(dt)
             handle_movement(self, dt)
@@ -144,7 +144,7 @@ function ini_state_machine(self)
             end
         end,
         exit = function()
-            print("Saliendo del estado MOVING")
+            --print("Saliendo del estado MOVING")
             sprite.play_flipbook(msg.url(self.sprite), "idle")
         end
     })
@@ -152,7 +152,7 @@ function ini_state_machine(self)
     -- Estado SHOOTING
     self.state_machine:add_state("shooting", {
         enter = function()
-            print("Entrando al estado SHOOTING")
+            --print("Entrando al estado SHOOTING")
         end,
         update = function(dt)
             handle_movement(self, dt) -- Permite movimiento mientras dispara
@@ -166,7 +166,7 @@ function ini_state_machine(self)
             end
         end,
         exit = function()
-            print("Saliendo del estado SHOOTING")
+            --print("Saliendo del estado SHOOTING")
         end
     })
 

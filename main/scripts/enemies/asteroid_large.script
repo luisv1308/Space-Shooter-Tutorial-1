@@ -1,0 +1,45 @@
+local Config = require "main/config"
+
+function init(self)
+    self.hp = 3 -- Vida del asteroide grande
+    self.speed = math.random(50, 100) -- Velocidad aleatoria
+end
+
+function update(self, dt)
+    -- Mover el asteroide hacia abajo
+    local pos = go.get_position()
+    pos.y = pos.y - self.speed * dt
+
+    go.set_position(pos)
+
+    -- Verificar si el asteroide está fuera de la pantalla
+    if pos.x < -50 or pos.x > Config.screen_width + 50 or
+       pos.y < -50 or pos.y > Config.screen_height + 200 then
+        go.delete() -- Destruir el asteroide
+    end
+end
+
+function on_message(self, message_id, message, sender)
+    if message_id == hash("collision_response") then
+        -- Reducir salud al recibir un impacto
+        self.hp = self.hp - 1
+        print("Asteroide golpeado. HP restante:", self.hp)
+
+        if self.hp <= 0 then
+            -- Notificar al Enemy Manager para crear asteroides pequeños
+            msg.post("/enemy_manager", "create_small_asteroids", { position = go.get_position(), count = 3 })
+
+            -- Destruir el asteroide grande
+            call_explotion_big(self)
+            go.delete()
+        end
+    end
+end
+
+function call_explotion_big(self)
+    local pos = go.get_position()
+    local props = {
+        animation = hash("explotion_blue")
+    }
+    factory.create("#explosion_big_factory", pos, nil, props)
+end
