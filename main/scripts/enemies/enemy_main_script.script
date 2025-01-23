@@ -4,6 +4,8 @@ local enemy_info_manager = require "main/scripts/managers/enemy_info_manager"
 -- Enemigo
 local EnemyScout = require "main/scripts/enemies/enemy_scout"
 local EnemyFighter = require "main/scripts/enemies/enemy_fighter"
+-- Powerups
+local WeaponSpeedPowerUp = require "main/scripts/powerups/weapon_speed_powerup"
 -- Player manager
 local PlayerManager = require "main/scripts/managers/player_info_manager"
 
@@ -14,6 +16,7 @@ go.property("enemy_type", hash("scout"))
 go.property("initial_position", vmath.vector3(0, 0, 0))
 go.property("movement_pattern", hash("linear"))
 go.property("level", 1)
+go.property("powerup_type", hash("none"))
 
 function init(self)
     print("Tipo enemigo", self.initial_position, self.movement_pattern, self.level)
@@ -81,7 +84,7 @@ function init_enemy_state_machine(self)
     -- Estado IDLE
     self.state_machine:add_state("idle", {
         enter = function()
-            print("Enemigo entrando al estado IDLE")
+            --print("Enemigo entrando al estado IDLE")
         end,
         update = function(dt)
             if self.enemy:should_patrol(self) then
@@ -91,14 +94,14 @@ function init_enemy_state_machine(self)
             end
         end,
         exit = function()
-            print("Enemigo saliendo del estado IDLE")
+            --print("Enemigo saliendo del estado IDLE")
         end
     })
 
     -- Estado PATROLLING
     self.state_machine:add_state("patrolling", {
         enter = function()
-            print("Enemigo entrando al estado PATROLLING")
+            --print("Enemigo entrando al estado PATROLLING")
             self.patrol_target = self.enemy:get_next_patrol_point(self)
         end,
         update = function(dt)
@@ -111,7 +114,7 @@ function init_enemy_state_machine(self)
             end
         end,
         exit = function()
-            print("Enemigo saliendo del estado PATROLLING")
+            --print("Enemigo saliendo del estado PATROLLING")
         end
     })
 
@@ -119,7 +122,7 @@ function init_enemy_state_machine(self)
     self.state_machine:add_state("chasing", {
         enter = function()
             --self.active_enemies = enemy_info_manager.get_active_enemies()
-            print("Enemigo entrando al estado CHASING")
+            --print("Enemigo entrando al estado CHASING")
         end,
         update = function(dt)
             self.enemy:apply_movement_pattern(dt)
@@ -129,7 +132,7 @@ function init_enemy_state_machine(self)
                 end
             end
             if self.enemy:has_reached_target(self.enemy.center_screen) then
-                print("Enemigo has reached target")
+                --print("Enemigo has reached target")
                 self.state_machine:set_state("attacking")
             end
             
@@ -143,7 +146,7 @@ function init_enemy_state_machine(self)
             end ]]
         end,
         exit = function()
-            print("Enemigo saliendo del estado CHASING")
+            --print("Enemigo saliendo del estado CHASING")
         end
     })
 
@@ -185,14 +188,14 @@ function init_enemy_state_machine(self)
             end
         end,
         exit = function()
-            print("Enemigo saliendo del estado ATTACKING")
+            --print("Enemigo saliendo del estado ATTACKING")
         end
     })
 
     -- Estado DAMAGE
     self.state_machine:add_state("damage", {
         enter = function()
-            print("Enemigo entrando al estado DAMAGE")
+            --print("Enemigo entrando al estado DAMAGE")
             
         end,
         update = function(dt)
@@ -201,14 +204,14 @@ function init_enemy_state_machine(self)
             end
         end,
         exit = function()
-            print("Enemigo saliendo del estado DAMAGE")
+            --print("Enemigo saliendo del estado DAMAGE")
         end
     })
 
     -- Estado RUNAWAY
     self.state_machine:add_state("runaway", {
         enter = function()
-            print("Enemigo entrando al estado RUNAWAY")
+            --print("Enemigo entrando al estado RUNAWAY")
         end,
         update = function(dt)
             self.enemy:move_to_initial_position(dt)
@@ -218,14 +221,14 @@ function init_enemy_state_machine(self)
             end
         end,
         exit = function()
-            print("Enemigo saliendo del estado RUN")
+            --print("Enemigo saliendo del estado RUN")
         end
     })
 
     -- Estado DEAD
     self.state_machine:add_state("dead", {
         enter = function()
-            print("Enemigo entrando al estado DEAD")
+            --print("Enemigo entrando al estado DEAD")
             if self.enemy.health <= 0 or self.enemy:is_out_of_bounds() then
                 -- Enviar mensaje a enemy manager
                 msg.post(msg.url("/enemy_manager#enemy_manager"), "remove_enemy", { enemy = go.get_id() })
@@ -233,7 +236,7 @@ function init_enemy_state_machine(self)
                     go.delete()
                 else 
                     local pos = go.get_position() -- Obtén la posición del objeto destruido
-                    print("ESTOY FUERAAAAAAAAAAAA")
+                    --print("ESTOY FUERAAAAAAAAAAAA")
                     -- Desactivar el sprite
                     -- Construye el hash dinámico
                     local sprite_id = "sprite_" .. self.enemy_type_name
@@ -245,6 +248,17 @@ function init_enemy_state_machine(self)
                     }
                     factory.create("#explosion_factory", pos, nil, props)
                     timer.delay(0.2, false, function()
+                        --print("Checar powerup", self.powerup_type)
+                        -- Checar Powerup
+                        if self.powerup_type ~= nil then
+                            if self.powerup_type == hash("weapon_speed") then
+                                print("Powerup Weapon Speed")
+                                props = {
+                                    type = hash("weapon_speed"),
+                                }
+                                factory.create("#powerup_factory", pos, nil, props)
+                            end
+                        end
                         -- Elimina el objeto actual
                         go.delete()
                     end)
@@ -255,7 +269,7 @@ function init_enemy_state_machine(self)
             
         end,
         exit = function()
-            print("Enemigo saliendo del estado DEAD")
+            --print("Enemigo saliendo del estado DEAD")
         end
     })
 

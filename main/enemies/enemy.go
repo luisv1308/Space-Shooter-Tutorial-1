@@ -73,3 +73,9 @@ embedded_components {
     y: 3.0
   }
 }
+embedded_components {
+  id: "powerup_factory"
+  type: "factory"
+  data: "prototype: \"/main/powerups/powerups.go\"\n"
+  ""
+}

@@ -29,6 +29,10 @@ function init(self)
     self.current_level = 1
     self.current_level_base = nil
 
+    self.powerup_timer = 0
+    self.active_powerup = nil
+    self.real_value = 0 -- valor antes del powerup 
+
     msg.post("#bounty_hunter_sprite", "disable")
     msg.post("#robot_sprite", "disable")
     -- Adquirir el foco de entrada
@@ -47,7 +51,7 @@ function init(self)
         self.weapon = RobotWeapon:new(msg.url("/factories#robot_bullet_factory"))
     end
     msg.post(self.sprite, "enable")
-    print("Jugador creado: " .. self.player.name)
+    --print("Jugador creado: " .. self.player.name)
     -- Inicializar la máquina de estados
     ini_state_machine(self)
     -- Configuración inicial del jugador
@@ -60,12 +64,21 @@ end
 function on_message(self, message_id, message, sender)
     if message_id == hash("current_level") then
         -- El nivel actual se encuentra en message.level
-        print("Nivel actual recibido: zzzzzzzzzzzzzzzz", message.level)
+        --print("Nivel actual recibido: zzzzzzzzzzzzzzzz", message.level)
         -- Puedes guardar el nivel o realizar alguna acción específica
         self.current_level = message.level
         self.current_level_base = message.base
-        print("Nivel cargado:", self.current_level_base)
+        --print("Nivel cargado:", self.current_level_base)
         --msg.post("@broadcast", "current_level", { level = self.current_level, base = self.current_level_base })
+    end
+    if message_id == hash("weapon_speed") then
+        -- Cambiar la velocidad de disparo
+        print("Cambiando velocidad de disparo")
+        self.active_powerup = "weapon_speed"
+        self.real_value = self.weapon.effect
+        self.weapon.fire_rate =  message.effect
+        self.powerup_timer = message.duration
+        print("Nueva velocidad de disparo:", self.weapon.fire_rate)
     end
 end
 
@@ -76,6 +89,18 @@ function update(self, dt)
      --self.player.fire_timer = self.player.fire_timer - dt
     -- Actualizar la máquina de estados
     self.state_machine:update(dt)
+
+    -- Powerups
+    if self.powerup_timer > 0 then
+        self.powerup_timer = self.powerup_timer - dt
+        if self.powerup_timer <= 0 then
+            -- revertir efecto
+            if self.active_powerup == "weapon_speed" then
+                self.weapon.fire_rate = self.real_value
+            end
+            self.active_powerup = nil
+        end
+    end
 end
 
 function ini_state_machine(self)
@@ -85,7 +110,7 @@ function ini_state_machine(self)
     -- Estado IDLE
     self.state_machine:add_state("idle", {
         enter = function()
-            print("Entrando al estado IDLE")
+            --print("Entrando al estado IDLE")
             sprite.play_flipbook(msg.url(self.sprite), "idle")
         end,
         update = function(dt)
@@ -96,14 +121,14 @@ function ini_state_machine(self)
             end
         end,
         exit = function()
-            print("Saliendo del estado IDLE")
+            --print("Saliendo del estado IDLE")
         end
     })
 
     -- Estado MOVING
     self.state_machine:add_state("moving", {
         enter = function()
-            print("Entrando al estado MOVING")
+            --print("Entrando al estado MOVING")
         end,
         update = function(dt)
             handle_movement(self, dt)
@@ -114,7 +139,7 @@ function ini_state_machine(self)
             end
         end,
         exit = function()
-            print("Saliendo del estado MOVING")
+            --print("Saliendo del estado MOVING")
             sprite.play_flipbook(msg.url(self.sprite), "idle")
         end
     })
@@ -122,7 +147,7 @@ function ini_state_machine(self)
     -- Estado SHOOTING
     self.state_machine:add_state("shooting", {
         enter = function()
-            print("Entrando al estado SHOOTING")
+            --print("Entrando al estado SHOOTING")
         end,
         update = function(dt)
             handle_movement(self, dt) -- Permite movimiento mientras dispara
@@ -136,7 +161,7 @@ function ini_state_machine(self)
             end
         end,
         exit = function()
-            print("Saliendo del estado SHOOTING")
+            --print("Saliendo del estado SHOOTING")
         end
     })
 

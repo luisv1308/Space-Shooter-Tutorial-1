@@ -1,0 +1,23 @@
+local WeaponSpeedPowerUp = require "main/scripts/powerups/weapon_speed_powerup"
+
+go.property("type", hash("weapon_speed"))
+
+
+function init(self)
+    self.powerup = nil
+	if self.type == hash("weapon_speed") then
+        self.powerup = WeaponSpeedPowerUp
+    end
+    --go.set_position(self.position, go.get_id())
+end
+
+
+function on_message(self, message_id, message, sender)
+    if message_id == hash("collision_response") and message.other_group == hash("player") then
+        local powerup = self.powerup
+        -- Enviar mensaje a jugador
+        props = { type = powerup.type, duration = powerup.duration, effect = powerup.effect }
+        msg.post(message.other_id, powerup.type, props)
+        go.delete()
+    end
+end

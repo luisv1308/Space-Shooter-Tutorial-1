@@ -23,7 +23,7 @@ function Weapon:fire(position, direction)
     --print("PROPS: ", self.fire_timer)
     if self.fire_timer <= 0 then
         -- Crear el disparo usando el factory
-        print(self.factory_url)
+        --print(self.factory_url)
         local projectile = collectionfactory.create(self.factory_url, position, nil, props)
         self.fire_timer = self.fire_rate
         return projectile

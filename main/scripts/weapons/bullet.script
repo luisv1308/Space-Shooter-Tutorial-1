@@ -6,9 +6,9 @@ function init(self)
     self.speed = self.speed or 200 -- Velocidad por defecto
     self.direction = self.direction or vmath.vector3(0, 0, 0) -- Dirección por defecto
 	self.damage = self.damage or 10 -- Daño por defecto
-	print("ID del proyectil: ", go.get_id())
-	print("Velocidad del proyectil: ", self.speed)
-	print("Direccion del proyectil: ", self.direction)
+	--print("ID del proyectil: ", go.get_id())
+	--print("Velocidad del proyectil: ", self.speed)
+	--print("Direccion del proyectil: ", self.direction)
 end
 
 function update(self, dt)

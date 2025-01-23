@@ -3,6 +3,6 @@ go.property("enemy", hash("enemy"))
 function init(self)
 	sprite.play_flipbook("#sprite", "explotion", function()
 		go.delete() -- Elimina el objeto al terminar la animación
-		print("Explotion finished")
+		--print("Explotion finished")
 	end)
 end
