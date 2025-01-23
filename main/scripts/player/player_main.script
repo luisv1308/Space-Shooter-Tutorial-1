@@ -72,11 +72,16 @@ function on_message(self, message_id, message, sender)
         --msg.post("@broadcast", "current_level", { level = self.current_level, base = self.current_level_base })
     end
     if message_id == hash("weapon_speed") then
+        -- Checar si este powerup está activo
+        if self.active_powerup == "weapon_speed" then
+            -- revertir efecto
+            self.weapon.fire_rate = self.real_value
+        end
         -- Cambiar la velocidad de disparo
         print("Cambiando velocidad de disparo")
         self.active_powerup = "weapon_speed"
-        self.real_value = self.weapon.effect
-        self.weapon.fire_rate =  message.effect
+        self.real_value = self.weapon.fire_rate
+        self.weapon.fire_rate =  self.weapon.fire_rate * message.effect
         self.powerup_timer = message.duration
         print("Nueva velocidad de disparo:", self.weapon.fire_rate)
     end
@@ -110,7 +115,7 @@ function ini_state_machine(self)
     -- Estado IDLE
     self.state_machine:add_state("idle", {
         enter = function()
-            --print("Entrando al estado IDLE")
+            print("Entrando al estado IDLE")
             sprite.play_flipbook(msg.url(self.sprite), "idle")
         end,
         update = function(dt)
@@ -121,14 +126,14 @@ function ini_state_machine(self)
             end
         end,
         exit = function()
-            --print("Saliendo del estado IDLE")
+            print("Saliendo del estado IDLE")
         end
     })
 
     -- Estado MOVING
     self.state_machine:add_state("moving", {
         enter = function()
-            --print("Entrando al estado MOVING")
+            print("Entrando al estado MOVING")
         end,
         update = function(dt)
             handle_movement(self, dt)
@@ -139,7 +144,7 @@ function ini_state_machine(self)
             end
         end,
         exit = function()
-            --print("Saliendo del estado MOVING")
+            print("Saliendo del estado MOVING")
             sprite.play_flipbook(msg.url(self.sprite), "idle")
         end
     })
@@ -147,7 +152,7 @@ function ini_state_machine(self)
     -- Estado SHOOTING
     self.state_machine:add_state("shooting", {
         enter = function()
-            --print("Entrando al estado SHOOTING")
+            print("Entrando al estado SHOOTING")
         end,
         update = function(dt)
             handle_movement(self, dt) -- Permite movimiento mientras dispara
@@ -161,7 +166,7 @@ function ini_state_machine(self)
             end
         end,
         exit = function()
-            --print("Saliendo del estado SHOOTING")
+            print("Saliendo del estado SHOOTING")
         end
     })
 
@@ -173,9 +178,11 @@ function handle_movement(self, dt)
     local move = vmath.vector3(0, 0, 0)
     if self.inputs[input_up] then
         move.y = move.y + 1
+        sprite.play_flipbook(msg.url(self.sprite), "idle")
     end
     if self.inputs[input_down] then
         move.y = move.y - 1
+        sprite.play_flipbook(msg.url(self.sprite), "idle")
     end
     if self.inputs[input_left] then
         move.x = move.x - 1
@@ -184,6 +191,10 @@ function handle_movement(self, dt)
     if self.inputs[input_right] then
         move.x = move.x + 1
         sprite.play_flipbook(msg.url(self.sprite), "right")
+    end
+
+    if move.x == 0 and move.y == 0 then
+        sprite.play_flipbook(msg.url(self.sprite), "idle")
     end
     
 

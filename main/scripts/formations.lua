@@ -1,11 +1,11 @@
 return {
     [1] = {
-         {type = "side_by_side", count = 5, movement_pattern = hash("side_by_side"), 
-            enemy_type = hash("fighter"), powerup = {type = hash("weapon_speed"), enemy_number = 1}, other = {
-               type = "outside_diagonal_right", count = 5, movement_pattern = hash("hit_and_run"), 
-               enemy_type = hash("scout"),}},
-      --    {type = "h_formation", count = 7, movement_pattern = hash("lineal"), 
-      --       enemy_type = hash("scout")},
+         -- {type = "side_by_side", count = 5, movement_pattern = hash("side_by_side"), 
+         --    enemy_type = hash("fighter"), powerup = {type = hash("weapon_speed"), enemy_number = 4}, other = {
+         --       type = "outside_diagonal_right", count = 2, movement_pattern = hash("hit_and_run"), 
+         --       enemy_type = hash("scout"),}},
+         -- {type = "h_formation", count = 7, movement_pattern = hash("lineal"), 
+         --    enemy_type = hash("scout"), powerup = {type = hash("weapon_speed"), enemy_number = 4}},
       --    {type = "v_formation", count = 9, movement_pattern = hash("lineal"), 
       --       enemy_type = hash("fighter")},
       --    {type = "double_column", count = 10, movement_pattern = hash("lineal"), 
