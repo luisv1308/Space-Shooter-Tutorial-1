@@ -1,0 +1,15 @@
+image: "/assets/SpaceShooterAssetPack_Ships.png"
+tile_width: 16
+tile_height: 16
+collision_groups: "default"
+animations {
+  id: "boss1"
+  start_tile: 18
+  end_tile: 18
+}
+animations {
+  id: "boss2"
+  start_tile: 19
+  end_tile: 19
+}
+extrude_borders: 2

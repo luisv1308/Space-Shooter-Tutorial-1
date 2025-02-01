@@ -14,6 +14,7 @@ M.player = {
 
 -- Configuraciones de enemigos
 M.enemies = {
+    spawn_time = 5,
     goblin = {
         health = 50,
         damage = 10,

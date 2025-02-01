@@ -1,0 +1,18 @@
+go.property("direction", vmath.vector3(0, -1, 0))
+
+function init(self)
+    self.speed = 200
+    -- Si se pasa la dirección, la usamos; si no, se asume que es hacia abajo
+    self.direction = self.direction or vmath.vector3(0, -1, 0)
+end
+
+function update(self, dt)
+    local pos = go.get_position()
+    pos = pos + self.direction * self.speed * dt
+    go.set_position(pos)
+
+    -- Si el proyectil sale de la pantalla, lo eliminamos
+    if pos.y < -20 or pos.y > 720 or pos.x < -20 or pos.x > 480 then
+        go.delete()
+    end
+end

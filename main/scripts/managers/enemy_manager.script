@@ -27,10 +27,19 @@ function update(self, dt)
     self.spawn_timer = self.spawn_timer + dt
     local formations_count = #self.spawn_formations
     
-    if self.spawn_timer >= 5 and self.counter < formations_count then -- Cada 5 segundos
+    if self.spawn_timer >= Config.enemies.spawn_time and self.counter < formations_count then -- Cada 5 segundos
         --self.spawn_formations = Utilities:shuffle_table(self.spawn_formations)
 
         local formation = self.spawn_formations[self.formation_index]
+        -- Checar si es un tipo jefe
+        if formation.enemy_type == hash("boss") then
+            -- Llamar el factory boss para crear el jefe
+            local boss = factory.create("#factory_boss", vmath.vector3(240, 360, 0), nil, {
+                boss_name = formation.boss_name
+            })
+            self.counter = self.counter + 1
+            return
+        end
         if formation then
             spawn_enemies_formations(self, formation.type, formation.count, 
                 self.current_level, formation.movement_pattern, formation.enemy_type, formation.powerup

@@ -20,3 +20,9 @@ embedded_components {
   data: "prototype: \"/main/enemies/asteroid_large.go\"\n"
   ""
 }
+embedded_components {
+  id: "factory_boss"
+  type: "factory"
+  data: "prototype: \"/main/enemies/boss.go\"\n"
+  ""
+}

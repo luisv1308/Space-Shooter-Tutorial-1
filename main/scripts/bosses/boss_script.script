@@ -1,0 +1,163 @@
+-- Supongamos que en el init del boss ya definiste:
+function init(self)
+    self.hp = 100
+    self.attack_timer = 0
+    self.is_alive = true
+
+    self.state = "entering"
+    self.start_position = vmath.vector3(240, 700, 0)
+    self.target_position = vmath.vector3(240, 500, 0)
+    go.set_position(self.start_position)
+
+    -- Animación de entrada del boss
+    go.animate(".", "position", go.PLAYBACK_ONCE_FORWARD, self.target_position, go.EASING_INOUTQUAD, 2, 0, function()
+        self.state = "normal"
+        self.oscillation_factor = 0
+    end)
+
+    self.current_pattern = "independent"  -- patrón que usaremos en este ejemplo
+    self.oscillation_amplitude = 50
+    self.oscillation_speed = 2
+    self.time = 0
+
+    self.desperate_factor = 1
+    self.desperate_transition_time = 2
+
+    -- Definición de los offsets para cada cañón
+    self.cannon_offsets = {
+        central = vmath.vector3(0, -30, 0),    -- cañón central
+        left = vmath.vector3(-20, -30, 0),      -- cañón izquierdo
+        right = vmath.vector3(20, -30, 0)        -- cañón derecho
+    }
+end
+
+-- Función de actualización
+function update(self, dt)
+    if not self.is_alive then 
+        return 
+    end
+
+    self.time = self.time + dt
+
+    if self.hp <= 20 and self.state ~= "desperate" then
+        self.state = "desperate"
+        self.desperate_factor = 1
+    end
+
+    if self.state == "normal" then
+        if self.oscillation_factor < 1 then
+            self.oscillation_factor = math.min(1, self.oscillation_factor + dt / 2)
+        end
+        move_normal(self, dt)
+    elseif self.state == "desperate" then
+        if self.desperate_factor < 1.5 then
+            self.desperate_factor = math.min(1.5, self.desperate_factor + dt / self.desperate_transition_time)
+        end
+        move_desperate(self, dt)
+    end
+
+    self.attack_timer = self.attack_timer + dt
+    if self.attack_timer >= 1.5 and self.hp > 0 then
+        shoot_independent(self)
+        self.attack_timer = 0
+    end
+end
+
+-- Movimiento normal (oscilación suave)
+function move_normal(self, dt)
+    local base_pos = self.target_position
+    local offset = self.oscillation_amplitude * self.oscillation_factor * math.sin(self.time * self.oscillation_speed)
+    local new_pos = vmath.vector3(base_pos.x + offset, base_pos.y, base_pos.z)
+    go.set_position(new_pos)
+end
+
+-- Movimiento desesperado (con mayor amplitud y un leve temblor vertical)
+function move_desperate(self, dt)
+    local base_pos = self.target_position
+    local amplitude = self.oscillation_amplitude * self.desperate_factor
+    local speed = self.oscillation_speed * self.desperate_factor
+    local offset = amplitude * self.oscillation_factor * math.sin(self.time * speed)
+    local vertical_offset = 10 * self.desperate_factor * math.sin(self.time * 10)
+    local new_pos = vmath.vector3(base_pos.x + offset, base_pos.y + vertical_offset, base_pos.z)
+    go.set_position(new_pos)
+end
+
+-- Función de disparo independiente: cada cañón dispara un patrón distinto
+function shoot_independent(self)
+    local boss_pos = go.get_position()
+    -- Define los retrasos (en segundos) para cada cañón
+    local delays = {
+        central = 0,   -- dispara inmediatamente
+        left = 1.5,    -- dispara 0.5 segundos después
+        right = 1.5    -- dispara 1.5 segundos después
+    }
+
+    for cannon, offset in pairs(self.cannon_offsets) do
+		
+        local spawn_position = boss_pos + offset
+        local delay = delays[cannon] or 0  -- en caso de que no esté definido, se usa 0
+
+        timer.delay(delay, false, function()
+			if self.hp <= 0 then
+				return
+			end
+			boss_pos = go.get_position()
+			spawn_position = boss_pos + offset
+            if cannon == "central" then
+                -- Disparo recto: un único proyectil hacia abajo
+                spread_shot(self, spawn_position)
+
+            elseif cannon == "left" then
+                -- Disparo en abanico desde el cañón izquierdo: tres proyectiles en ángulos distintos
+				burst_shoot(self, spawn_position, offset)
+
+            elseif cannon == "right" then
+                -- Disparo en ráfaga desde el cañón derecho: 3 proyectiles en secuencia rápida
+                burst_shoot(self, spawn_position, offset)
+            end
+        end)
+    end
+end
+
+function central_shot(self, spawn_position)
+	factory.create("#projectile_factory", spawn_position)
+end
+
+function spread_shot(self, spawn_position)
+	-- Disparo en abanico desde el cañón izquierdo: tres proyectiles en ángulos distintos
+	local angles = {-30, 0, 20}  -- ángulos en grados
+	for i, angle in ipairs(angles) do
+		local rad = math.rad(angle)
+		local direction = vmath.vector3(math.sin(rad), -math.cos(rad), 0)
+		factory.create("#projectile_factory", spawn_position, nil, { direction = direction })
+	end
+end
+
+function burst_shoot(self, spawn_position, offset)
+	for i = 1, 3 do
+		timer.delay(0.1 * i, false, function()
+			boss_pos = go.get_position()
+			spawn_position = boss_pos + offset
+			factory.create("#projectile_factory", spawn_position)
+		end)
+	end
+end
+
+
+-- Función de manejo de mensajes para recibir daño
+function on_message(self, message_id, message, sender)
+    if message_id == hash("take_damage") then
+        self.hp = self.hp - message.amount
+        if self.hp <= 0 then
+            die(self)
+        end
+    end
+end
+
+-- Función de muerte del boss
+function die(self)
+    self.is_alive = false
+    go.animate(".", "scale", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(0,0,0), go.EASING_INOUTQUAD, 1.5, 0, function()
+        go.delete()
+    end)
+end
