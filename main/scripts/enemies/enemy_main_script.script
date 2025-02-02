@@ -232,6 +232,8 @@ function init_enemy_state_machine(self)
             if self.enemy.health <= 0 or self.enemy:is_out_of_bounds() then
                 -- Enviar mensaje a enemy manager
                 msg.post(msg.url("/enemy_manager#enemy_manager"), "remove_enemy", { enemy = go.get_id() })
+                -- SFX de explosion 
+                
                 if self.enemy:is_out_of_bounds() then
                     go.delete()
                 else 

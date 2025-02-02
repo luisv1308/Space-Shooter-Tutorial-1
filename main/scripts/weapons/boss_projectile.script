@@ -4,6 +4,8 @@ function init(self)
     self.speed = 200
     -- Si se pasa la dirección, la usamos; si no, se asume que es hacia abajo
     self.direction = self.direction or vmath.vector3(0, -1, 0)
+    -- Reproducir sonido
+    sound.play("#sound_fire")
 end
 
 function update(self, dt)

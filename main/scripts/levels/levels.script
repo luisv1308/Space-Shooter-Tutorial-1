@@ -1,0 +1,41 @@
+function init(self)
+    -- Esconder el sprite warning
+    msg.post("/Warning#warning", "disable")
+    -- Tiempo en segundos para cada estado (visible/invisible)
+    self.blink_interval = 0.5
+    -- Acumulador de tiempo
+    self.timer = 0
+    -- Estado actual: true = visible, false = invisible
+    self.visible = true
+    -- Asegúrate de que el sprite comienza visible
+    sprite.set_color("/Warning#warning", vmath.vector4(1, 1, 1, 1))
+    
+end
+
+function update(self, dt)
+    self.timer = self.timer + dt
+    if self.timer >= self.blink_interval then
+        self.timer = self.timer - self.blink_interval
+        -- Alterna el estado de visibilidad
+        self.visible = not self.visible
+
+        if self.visible then
+            -- Hacemos el sprite completamente visible
+            sprite.set_color("/Warning#warning", vmath.vector4(1, 1, 1, 1))
+        else
+            -- Hacemos el sprite invisible (opacidad 0)
+            sprite.set_color("/Warning#warning", vmath.vector4(1, 1, 1, 0))
+        end
+    end
+end
+
+function on_message(self, message_id, message, sender)
+    if message_id == hash("boss_incoming") then
+        -- Activar el sprite warning por 5 segundos
+        msg.post("/Warning#warning", "enable")
+        timer.delay(5, false, function()
+            msg.post("/Warning#warning", "disable")
+        end)
+    end
+end
+

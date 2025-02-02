@@ -52,3 +52,21 @@ embedded_components {
   data: "prototype: \"/main/weapons/enemies/boss_projectile.go\"\n"
   ""
 }
+embedded_components {
+  id: "explosion_factory0"
+  type: "factory"
+  data: "prototype: \"/main/misc/explotion_boss.go\"\n"
+  ""
+}
+embedded_components {
+  id: "explosion_factory1"
+  type: "factory"
+  data: "prototype: \"/main/misc/explotion_boss.go\"\n"
+  ""
+}
+embedded_components {
+  id: "explosion_factory2"
+  type: "factory"
+  data: "prototype: \"/main/misc/explotion_boss.go\"\n"
+  ""
+}

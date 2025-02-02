@@ -1,6 +1,6 @@
 -- Supongamos que en el init del boss ya definiste:
 function init(self)
-    self.hp = 100
+    self.hp = 50
     self.attack_timer = 0
     self.is_alive = true
 
@@ -156,8 +156,34 @@ end
 
 -- Función de muerte del boss
 function die(self)
+    local explosions = {
+        { offset = vmath.vector3(0, -20, 0), timer = 1.5 },
+        { offset = vmath.vector3(-50, 0, 0), timer = 1.8, scale = vmath.vector3(12.5, 12.5, 0.5) },
+        { offset = vmath.vector3(50, 0, 0), timer = 1.8, scale = vmath.vector3(12.5, 12.5, 0.5) }
+    }
+    
+    for i, explosion in ipairs(explosions) do
+        local pos = go.get_position() + explosion.offset
+        local props = {
+            enemy = self.url,
+            animation = hash("explotion_purple"),
+            timer = explosion.timer
+        }
+        if explosion.scale then
+            props.scale = explosion.scale
+        end
+        factory.create("#explosion_factory" .. tostring(i-1), pos, nil, props)
+    end
+    
     self.is_alive = false
     go.animate(".", "scale", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(0,0,0), go.EASING_INOUTQUAD, 1.5, 0, function()
-        go.delete()
+        
+        -- Esperar 3 segundos y enviar mensaje de cargar nuevo nivel
+        timer.delay(3.0, false, function()
+            --msg.post(msg.url("/game_manager#game_manager"), "load_level", { level = "main" })
+            msg.post("main:/game_manager", "level_cleared")
+
+            go.delete()
+        end)
     end)
 end

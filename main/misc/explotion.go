@@ -20,3 +20,9 @@ embedded_components {
     y: 3.0
   }
 }
+embedded_components {
+  id: "sound"
+  type: "sound"
+  data: "sound: \"/assets/sounds/Weapons&Fight/SFX_explosion1.wav\"\n"
+  ""
+}

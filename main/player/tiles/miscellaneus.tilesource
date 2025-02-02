@@ -26,6 +26,7 @@ animations {
   id: "explotion_purple"
   start_tile: 85
   end_tile: 87
+  playback: PLAYBACK_LOOP_FORWARD
   fps: 6
 }
 animations {

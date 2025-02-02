@@ -1,0 +1,29 @@
+go.property("timer", 0)
+
+local function blink(self)
+    -- Animar alpha del sprite de 1 a 0 en 0.5s
+    go.animate("#sprite", "tint", go.PLAYBACK_ONCE_FORWARD, vmath.vector4(1, 1, 1, 0), go.EASING_LINEAR, 0.5, 0, function()
+        -- Animar alpha de 0 a 1 en 0.5s después de un pequeño delay
+        go.animate("#sprite", "tint", go.PLAYBACK_ONCE_FORWARD, vmath.vector4(1, 1, 1, 1), go.EASING_LINEAR, 0.5)
+        
+        -- Esperar 0.5 segundos y volver a llamar blink
+        timer.delay(1.0, false, function()
+            blink(self)
+        end)
+    end)
+end
+
+function init(self)
+    -- Asegurar que el sprite comienza visible
+    go.set("#sprite", "tint", vmath.vector4(1, 1, 1, 1))
+    -- Iniciar el loop de parpadeo
+    blink(self)
+    -- Usar timer para auto delete
+    timer.delay(self.timer, false, function()
+        go.delete()
+    end)
+end
+
+function update(self, dt)
+    
+end

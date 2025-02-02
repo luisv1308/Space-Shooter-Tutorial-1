@@ -3,13 +3,13 @@ local enemy_info_manager = require "main/scripts/managers/enemy_info_manager"
 local Utilities = require "main/scripts/utilities"
 local SMALL_ASTEROID_FACTORY = "#small_asteroid_factory"
 
-
+go.property("level", 1)
 -- enemy_manager.script
 function init(self)
     print("Enemy manager initialized")
     self.enemies = {} -- Lista para almacenar enemigos activos
     self.spawn_timer = 0
-    self.current_level = 1
+    self.current_level = self.level or 1
     self.formation_index = 1
     self.spawn_formations = {}
     self.counter = 0
@@ -33,8 +33,15 @@ function update(self, dt)
         local formation = self.spawn_formations[self.formation_index]
         -- Checar si es un tipo jefe
         if formation.enemy_type == hash("boss") then
-            -- Llamar el factory boss para crear el jefe
-            spawn_boss(self, formation.boss_name)
+            -- Crear objeto warning
+            factory.create("/warning#factory_warning", vmath.vector3(0, 0, 0), nil, { level = self.current_level, timer = 5 })
+            -- Esperar 5 segundos
+            local boss_name = formation.boss_name
+            timer.delay(5, false, function()
+                -- Llamar el factory boss para crear el jefe
+                spawn_boss(self, boss_name)
+                
+            end)
             -- Remover de la lista de formaciones
             table.remove(self.spawn_formations, self.formation_index)
             -- Set formation null

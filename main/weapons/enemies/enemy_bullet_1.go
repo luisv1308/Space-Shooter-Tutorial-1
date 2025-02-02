@@ -47,3 +47,9 @@ embedded_components {
   "}\n"
   ""
 }
+embedded_components {
+  id: "sound_fire"
+  type: "sound"
+  data: "sound: \"/assets/sounds/Weapons&Fight/SFX_shot1.wav\"\n"
+  ""
+}

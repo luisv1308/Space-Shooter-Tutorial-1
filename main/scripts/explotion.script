@@ -1,8 +1,20 @@
 go.property("enemy", hash("enemy"))
 go.property("animation", hash("explotion"))
+go.property("timer", 0)
+go.property("scale", vmath.vector3(1,1,1))
 function init(self)
+	sound.play("#sound")
 	sprite.play_flipbook("#sprite", self.animation, function()
 		go.delete() -- Elimina el objeto al terminar la animación
 		--print("Explotion finished")
 	end)
+	-- Checar si scale es diferente de 1
+	if self.scale.x ~= 1 or self.scale.y ~= 1 or self.scale.z ~= 1 then
+		go.set("#sprite", "scale", self.scale)
+	end
+	if self.timer > 0 then
+		timer.delay(self.timer, false, function()
+			go.delete()
+		end)
+	end
 end

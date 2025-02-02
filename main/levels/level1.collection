@@ -157,3 +157,13 @@ embedded_instances {
     z: -1.0
   }
 }
+embedded_instances {
+  id: "warning"
+  data: "embedded_components {\n"
+  "  id: \"factory_warning\"\n"
+  "  type: \"factory\"\n"
+  "  data: \"prototype: \\\"/main/misc/warning.go\\\"\\n"
+  "\"\n"
+  "}\n"
+  ""
+}

@@ -12,6 +12,8 @@ function init(self)
     local position = go.get_position()
     local player_position = self.direction
     self.new_direction = vmath.normalize(player_position - position)
+    -- Reproducir sonido
+    sound.play("#sound_fire")
 end
 
 function update(self, dt)
