@@ -34,11 +34,11 @@ function update(self, dt)
         -- Checar si es un tipo jefe
         if formation.enemy_type == hash("boss") then
             -- Llamar el factory boss para crear el jefe
-            local boss = factory.create("#factory_boss", vmath.vector3(240, 360, 0), nil, {
-                boss_name = formation.boss_name
-            })
-            self.counter = self.counter + 1
-            return
+            spawn_boss(self, formation.boss_name)
+            -- Remover de la lista de formaciones
+            table.remove(self.spawn_formations, self.formation_index)
+            -- Set formation null
+            formation = nil -- para que se salte el siguiente if
         end
         if formation then
             spawn_enemies_formations(self, formation.type, formation.count, 
@@ -58,7 +58,6 @@ function update(self, dt)
 
     -- Lanzar asteroides
     if self.asteroids_total > 0 then
-        print("Spawning asteroidszzzzzzzzzzzzzzzzzzzzzzzz", self.asteroids_total)
         spawn_asteroids(self, self.current_level)
         self.asteroids_total = self.asteroids_total - 1
     end
@@ -96,6 +95,13 @@ function on_message(self, message_id, message, sender)
     end
 end
 
+function spawn_boss(self, boss_name)
+    local boss = factory.create("#factory_boss", vmath.vector3(240, 360, 0), nil, {
+        boss_name = boss_name
+    })
+    --table.insert(self.enemies, boss)
+    --enemy_info_manager.add_enemy(boss)
+end
 function spawn_enemies_formations(self, formation_type, count, level, movement_pattern, enemy_type, powerup)
     local spacing_x = 40 -- Espaciado horizontal
     local spacing_y = 40 -- Espaciado vertical
