@@ -2,12 +2,16 @@ go.property("speed", 100)
 go.property("direction", vmath.vector3(0, 1, 0))
 go.property("damage", 10)
 
+local active_sounds = 0
+local max_sounds = 5 -- Ajusta según sea necesario
+
+
 function init(self)
     self.speed = self.speed or 200 -- Velocidad por defecto
     self.direction = self.direction or vmath.vector3(0, 0, 0) -- Dirección por defecto
     self.damage = self.damage or 10 -- Daño por defecto
     -- Play el sonido
-    sound.play("#sound_fire")
+    --play_shoot_sound()
 	--print("ID del proyectil: ", go.get_id())
 	--print("Velocidad del proyectil: ", self.speed)
 	--print("Direccion del proyectil: ", self.direction)
@@ -38,5 +42,17 @@ function on_message(self, message_id, message, sender)
             -- Opcional: Destruye la bala
             go.delete()
         end
+    end
+    if message_id == hash("play_shoot_sound") then
+        sound.play("#sound_fire")
+    end
+end
+
+function play_shoot_sound()
+    if active_sounds < max_sounds then
+        sound.play("#sound_fire", {},  function() 
+            active_sounds = active_sounds - 1
+        end)
+        active_sounds = active_sounds + 1
     end
 end

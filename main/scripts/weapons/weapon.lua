@@ -1,4 +1,6 @@
 local Weapon = {}
+local last_sound_time = 0
+local sound_cooldown = 0.4 -- Ajusta según la velocidad de la metralleta
 
 function Weapon:new(factory_url, damage, speed, fire_rate, object_id)
     local instance = {
@@ -26,6 +28,17 @@ function Weapon:fire(position, direction)
         --print(self.factory_url)
         local projectile = collectionfactory.create(self.factory_url, position, nil, props)
         self.fire_timer = self.fire_rate
+        
+        -- Controlar el sonido desde aquí
+        -- Obtener la referencia al objeto dentro de la colección que tiene el sonido
+        local bullet_sound = projectile[hash(self.object_id)] -- Ajusta "bullet" si el nombre es diferente
+        
+        -- Controlar la reproducción del sonido
+        local current_time = socket.gettime()
+        if current_time - last_sound_time >= sound_cooldown then
+            msg.post(bullet_sound, "play_shoot_sound")
+            last_sound_time = current_time
+        end
         return projectile
     end
 end
