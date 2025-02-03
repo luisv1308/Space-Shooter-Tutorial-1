@@ -149,6 +149,8 @@ function on_message(self, message_id, message, sender)
     if message_id == hash("take_damage") then
         self.hp = self.hp - message.amount
         if self.hp <= 0 then
+            -- Desactivar colisión
+            msg.post("#collisionobject", "disable")
             die(self)
         end
     end
@@ -156,6 +158,7 @@ end
 
 -- Función de muerte del boss
 function die(self)
+    
     local explosions = {
         { offset = vmath.vector3(0, -20, 0), timer = 1.5 },
         { offset = vmath.vector3(-50, 0, 0), timer = 1.8, scale = vmath.vector3(12.5, 12.5, 0.5),  volume = 0.2 },
@@ -179,6 +182,7 @@ function die(self)
     end
     
     self.is_alive = false
+    
     go.animate(".", "scale", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(0,0,0), go.EASING_INOUTQUAD, 1.5, 0, function()
         -- Enviar mensaje a dialogo
         msg.post("/dialogue_gui#dialogue", "start_dialogue", { text = "Level cleared! Well done!", speed = 0.05, texture = "friend_robot" })

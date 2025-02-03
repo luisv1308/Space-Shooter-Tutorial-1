@@ -23,6 +23,7 @@ function typewriter_effect(node, text, speed)
     local current_text = ""
 
     timer.delay(speed, true, function(self, handle)
+        show_nodes()
         if index <= #text then
             current_text = text:sub(1, index)
             gui.set_text(node, current_text)
