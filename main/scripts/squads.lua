@@ -50,6 +50,18 @@ local squads = {
     boss_3 = {
         type = "side_by_side", count = 3, movement_pattern = hash("side_by_side"),
         enemy_type = hash("boss"), boss_name = hash("boss_3")
+    },
+    level_1_dialogue_1 = {
+        type = "dialogue_event", count = 1, text = "Hola, es hora de empezar la accion!", 
+        texture = "bounty_hunter", speed = 0.05
+    },
+    level_1_dialogue_2 = {
+        type = "dialogue_event", count = 1, text = "Bien hecho!", 
+        texture = "friend_robot", speed = 0.05
+    },
+    level_1_dialogue_3 = {
+        type = "dialogue_event", count = 1, text = "Hola, es hora de empezar la accion!", 
+        texture = "friend_robot", speed = 0.05
     }
 }
 

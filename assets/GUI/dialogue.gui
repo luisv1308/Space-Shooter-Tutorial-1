@@ -1,0 +1,94 @@
+script: "/assets/GUI/dialogue.gui_script"
+fonts {
+  name: "cyber_time"
+  font: "/assets/fonts/cyber_time.font"
+}
+textures {
+  name: "gui"
+  texture: "/assets/tiles/gui.tilesource"
+}
+textures {
+  name: "avatars1"
+  texture: "/assets/tiles/avatars.atlas"
+}
+nodes {
+  position {
+    x: 275.0
+    y: 50.0
+    z: -1.0
+  }
+  scale {
+    x: 3.0
+    y: 3.0
+  }
+  size {
+    x: 112.0
+    y: 24.0
+  }
+  type: TYPE_BOX
+  texture: "gui/blue_text_bg"
+  id: "box"
+  inherit_alpha: true
+  slice9 {
+    x: 4.0
+    y: 8.0
+    z: 4.0
+    w: 8.0
+  }
+}
+nodes {
+  position {
+    x: 115.0
+    y: 50.0
+    z: 1.0
+  }
+  size {
+    x: 350.0
+    y: 150.0
+  }
+  type: TYPE_TEXT
+  font: "cyber_time"
+  id: "dialog_text"
+  pivot: PIVOT_W
+  line_break: true
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: 80.0
+    y: 50.0
+    z: -1.0
+  }
+  scale {
+    x: 4.0
+    y: 4.0
+  }
+  size {
+    x: 16.0
+    y: 18.0
+  }
+  type: TYPE_BOX
+  texture: "gui/blue_text_bg"
+  id: "box_avatar"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: 80.0
+    y: 50.0
+  }
+  scale {
+    x: 6.0
+    y: 6.0
+  }
+  size {
+    x: 8.0
+    y: 8.0
+  }
+  type: TYPE_BOX
+  texture: "avatars1/friend_robot"
+  id: "avatar"
+  inherit_alpha: true
+}
+material: "/builtins/materials/gui.material"
+adjust_reference: ADJUST_REFERENCE_PARENT

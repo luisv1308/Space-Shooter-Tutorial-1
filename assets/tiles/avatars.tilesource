@@ -1,0 +1,26 @@
+image: "/assets/SpaceShooterAssetPack_Characters.png"
+tile_width: 8
+tile_height: 8
+collision_groups: "default"
+animations {
+  id: "bounty_hunter"
+  start_tile: 1
+  end_tile: 5
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 10
+}
+animations {
+  id: "friend_robot"
+  start_tile: 51
+  end_tile: 55
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 10
+}
+animations {
+  id: "robot"
+  start_tile: 11
+  end_tile: 15
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 10
+}
+extrude_borders: 2

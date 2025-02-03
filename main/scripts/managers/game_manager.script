@@ -24,6 +24,7 @@ end
 
 function on_message(self, message_id, message, sender)
     if message_id == hash("level_cleared") then
+        
         --current_level = current_level + 1
         if current_level <= #LEVEL_DATA then
             self.loading = false
@@ -67,9 +68,12 @@ function load_level(self, level)
 
     -- Descargar el nivel actual si existe
     if self.current_level_proxy then
-        msg.post(self.current_level_proxy, "unload")
-        self.loading = false
-        self.current_level_proxy = nil
+        -- Esperar 5 segundos antes de descargar el nuevo nivel
+        timer.delay(5.0, false, function()
+            msg.post(self.current_level_proxy, "unload")
+            self.loading = false
+            self.current_level_proxy = nil
+        end)
     else
         -- Si no hay nivel cargado, cargar directamente el nuevo nivel
         local proxy = LEVEL_DATA[level].proxy

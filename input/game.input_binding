@@ -18,6 +18,10 @@ key_trigger {
   input: KEY_SPACE
   action: "shoot"
 }
+key_trigger {
+  input: KEY_ENTER
+  action: "ui_accept"
+}
 mouse_trigger {
   input: MOUSE_BUTTON_1
   action: "touch"

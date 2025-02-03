@@ -1,0 +1,55 @@
+
+
+function init(self)
+    hide_nodes()
+end
+
+
+function on_message(self, message_id, message, sender)
+    if message_id == hash("start_dialogue") then
+		local avatar_node = gui.get_node("avatar")  -- Nodo donde estará la animación
+		gui.play_flipbook(avatar_node, message.texture)  -- Inicia la animación
+		-- Mostrar el cuadro de diálogo
+		show_nodes()
+        typewriter_effect(gui.get_node("dialog_text"), message.text, message.speed)
+    end
+end
+	
+
+
+function typewriter_effect(node, text, speed)
+    gui.set_text(node, "") -- Inicia vacío
+    local index = 1
+    local current_text = ""
+
+    timer.delay(speed, true, function(self, handle)
+        if index <= #text then
+            current_text = text:sub(1, index)
+            gui.set_text(node, current_text)
+            index = index + 1
+            sound.play("#sound_text")
+        else
+            timer.delay(5, false, function()
+                timer.cancel(handle)
+                hide_nodes()
+            end)
+			
+            return true
+        end
+    end)
+end
+
+function hide_nodes()
+    gui.set_enabled(gui.get_node("dialog_text"), false)  -- Esconde el cuadro de diálogo
+    gui.set_enabled(gui.get_node("avatar"), false)  -- Esconde el avatar
+	gui.set_enabled(gui.get_node("box"), false)  -- Esconde el cuadro de diálogo
+	gui.set_enabled(gui.get_node("box_avatar"), false)  -- Esconde el cuadro de diálogo
+end
+
+function show_nodes()
+	gui.set_enabled(gui.get_node("dialog_text"), true)  -- Muestra el cuadro de diálogo
+	gui.set_enabled(gui.get_node("avatar"), true)  -- Muestra el avatar
+	gui.set_enabled(gui.get_node("box"), true)  -- Muestra el cuadro de diálogo
+	gui.set_enabled(gui.get_node("box_avatar"), true)  -- Muestra el cuadro de diálogo
+end
+

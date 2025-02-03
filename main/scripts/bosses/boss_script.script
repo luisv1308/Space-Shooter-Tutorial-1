@@ -158,8 +158,8 @@ end
 function die(self)
     local explosions = {
         { offset = vmath.vector3(0, -20, 0), timer = 1.5 },
-        { offset = vmath.vector3(-50, 0, 0), timer = 1.8, scale = vmath.vector3(12.5, 12.5, 0.5) },
-        { offset = vmath.vector3(50, 0, 0), timer = 1.8, scale = vmath.vector3(12.5, 12.5, 0.5) }
+        { offset = vmath.vector3(-50, 0, 0), timer = 1.8, scale = vmath.vector3(12.5, 12.5, 0.5),  volume = 0.2 },
+        { offset = vmath.vector3(50, 0, 0), timer = 1.8, scale = vmath.vector3(12.5, 12.5, 0.5), volume = 0.2 }
     }
     
     for i, explosion in ipairs(explosions) do
@@ -172,12 +172,16 @@ function die(self)
         if explosion.scale then
             props.scale = explosion.scale
         end
+        if explosion.volume then
+            props.volume = explosion.volume
+        end
         factory.create("#explosion_factory" .. tostring(i-1), pos, nil, props)
     end
     
     self.is_alive = false
     go.animate(".", "scale", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(0,0,0), go.EASING_INOUTQUAD, 1.5, 0, function()
-        
+        -- Enviar mensaje a dialogo
+        msg.post("/dialogue_gui#dialogue", "start_dialogue", { text = "Level cleared! Well done!", speed = 0.05, texture = "friend_robot" })
         -- Esperar 3 segundos y enviar mensaje de cargar nuevo nivel
         timer.delay(3.0, false, function()
             --msg.post(msg.url("/game_manager#game_manager"), "load_level", { level = "main" })

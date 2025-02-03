@@ -167,3 +167,20 @@ embedded_instances {
   "}\n"
   ""
 }
+embedded_instances {
+  id: "dialogue_gui"
+  data: "components {\n"
+  "  id: \"dialogue\"\n"
+  "  component: \"/assets/GUI/dialogue.gui\"\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"sound_text\"\n"
+  "  type: \"sound\"\n"
+  "  data: \"sound: \\\"/assets/sounds/button-beep.wav\\\"\\n"
+  "\"\n"
+  "}\n"
+  ""
+  position {
+    z: 1.0
+  }
+}

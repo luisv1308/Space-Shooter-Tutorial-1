@@ -1,0 +1,4 @@
+font: "/assets/fonts/Cyber_Time.ttf"
+material: "/builtins/fonts/font.material"
+size: 11
+characters: " !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"

@@ -2,6 +2,7 @@ local squads = require("main/scripts/squads")
 
 return {
     [1] = {
+            squads.level_1_dialogue_1,
             -- squads.side_by_side_5_fighter,
             -- squads.side_by_side_5_fighter_powerup_other,
             -- squads.h_formation_7_scout_powerup,

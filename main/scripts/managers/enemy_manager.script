@@ -46,6 +46,18 @@ function update(self, dt)
             table.remove(self.spawn_formations, self.formation_index)
             -- Set formation null
             formation = nil -- para que se salte el siguiente if
+            return
+        end
+        -- Checar si es un evento de dialogo 
+        if formation.type == "dialogue_event" then
+            -- Enviar mensaje a dialogue
+            msg.post("/dialogue_gui#dialogue", "start_dialogue", { text = formation.text, speed = formation.speed
+            , texture = formation.texture })
+            -- Remover de la lista de formaciones
+            table.remove(self.spawn_formations, self.formation_index)
+            -- Set formation null
+            formation = nil
+            return
         end
         if formation then
             spawn_enemies_formations(self, formation.type, formation.count, 
@@ -58,9 +70,14 @@ function update(self, dt)
                 )
             end
             self.formation_index = self.formation_index % #self.spawn_formations + 1
+            -- Remover de la lista de formaciones
+            table.remove(self.spawn_formations, self.formation_index)
+            -- Set formation null
+            formation = nil
         end
         self.spawn_timer = 0
         self.counter = self.counter + 1
+        
     end
 
     -- Lanzar asteroides

@@ -1,0 +1,41 @@
+animations {
+  id: "bounty_hunter"
+  images {
+    image: "/assets/avatars/bounty_hunter/1.png"
+  }
+  images {
+    image: "/assets/avatars/bounty_hunter/2.png"
+  }
+  images {
+    image: "/assets/avatars/bounty_hunter/3.png"
+  }
+  images {
+    image: "/assets/avatars/bounty_hunter/4.png"
+  }
+  images {
+    image: "/assets/avatars/bounty_hunter/5.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 10
+}
+animations {
+  id: "friend_robot"
+  images {
+    image: "/assets/avatars/robot_friend/1.png"
+  }
+  images {
+    image: "/assets/avatars/robot_friend/2.png"
+  }
+  images {
+    image: "/assets/avatars/robot_friend/3.png"
+  }
+  images {
+    image: "/assets/avatars/robot_friend/4.png"
+  }
+  images {
+    image: "/assets/avatars/robot_friend/5.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 10
+}
+extrude_borders: 2
