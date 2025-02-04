@@ -1,6 +1,7 @@
 -- game_manager.script
 local formations_data  = require "main/scripts/formations"
 local dispatcher = require "main/scripts/dispatcher"
+local score = 0 -- Variable de puntaje
 
 local current_level = 1
 local LEVEL_DATA = {
@@ -49,6 +50,14 @@ function on_message(self, message_id, message, sender)
         current_level = current_level + 1
         load_level(self, current_level)
     end
+
+    if message_id == hash("add_score") then
+        score = score + message.points
+         -- Enviar actualización a la GUI
+         msg.post("/score_gui", "update_score", { points = score })
+    elseif message_id == hash("get_score") then
+        msg.post(sender, "score_value", { points = score }) -- Devolver puntaje
+    end
 end
 
 function load_level_formations(self, level)
@@ -81,4 +90,8 @@ function load_level(self, level)
         self.current_level_proxy = proxy
         msg.post(proxy, "load")
     end
+end
+
+function final(self)
+    sys.save("game_data", { score = score }) -- Guardar el puntaje al salir
 end

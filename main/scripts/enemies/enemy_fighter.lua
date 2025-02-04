@@ -16,7 +16,8 @@ function Scout:new(properties)
         weapon = properties.weapon or EnemyBullet1:new(msg.url("/factories#enemy_bullet_1_factory")),
         movement_pattern = properties.movement_pattern or "linear",
         amplitude = properties.amplitude or 2,
-        attack_range = properties.attack_range or 400
+        attack_range = properties.attack_range or 400,
+        points = properties.points or 15
     })
     setmetatable(self, Scout)
     return self

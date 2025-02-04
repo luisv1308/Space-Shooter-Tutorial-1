@@ -25,6 +25,7 @@ function Enemy.new(properties)
     self.time = 0 -- Tiempo acumulado para wave
     self.center_screen = vmath.vector3(240, 300, 0)
     self.level = properties.level or 1
+    self.points = properties.points or 0
 
     return self
 end

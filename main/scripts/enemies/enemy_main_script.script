@@ -87,6 +87,8 @@ function on_message(self, message_id, message, sender)
     if message_id == hash("take_damage") then
         self.enemy.health = self.enemy.health - message.amount
         if self.enemy.health <= 0 then
+            -- Enviar mensaje a game manager para actualizar score
+            msg.post(msg.url("main:/game_manager"), "add_score", { points = self.enemy.points })
             self.state_machine:set_state("dead")
         else
             self.state_machine:set_state("damage")
@@ -249,7 +251,7 @@ function init_enemy_state_machine(self)
             if self.enemy.health <= 0 or self.enemy:is_out_of_bounds() then
                 -- Enviar mensaje a enemy manager
                 msg.post(msg.url("/enemy_manager#enemy_manager"), "remove_enemy", { enemy = go.get_id() })
-                -- SFX de explosion 
+                
                 
                 if self.enemy:is_out_of_bounds() then
                     go.delete()

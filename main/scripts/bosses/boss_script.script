@@ -158,7 +158,9 @@ end
 
 -- Función de muerte del boss
 function die(self)
-    
+    -- Enviar mensaje a game manager para actualizar score
+    msg.post(msg.url("main:/game_manager"), "add_score", { points = 100 })
+
     local explosions = {
         { offset = vmath.vector3(0, -20, 0), timer = 1.5 },
         { offset = vmath.vector3(-50, 0, 0), timer = 1.8, scale = vmath.vector3(12.5, 12.5, 0.5),  volume = 0.2 },

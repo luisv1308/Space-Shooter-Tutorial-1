@@ -45,8 +45,11 @@ function on_message(self, message_id, message, sender)
         -- Reducir salud al recibir un impacto
         self.hp = self.hp - 1
     end
-    if message_id == hash("die") then   
-        self.speed = 500
+    if message_id == hash("die") then  
+        -- Animar self speed 
+        
+        local target_y = -200
+        go.animate(".", "position.y", go.PLAYBACK_ONCE_FORWARD, target_y, go.EASING_OUTQUAD, 2.5, 0)
     end
 end
 

@@ -32,3 +32,11 @@ embedded_instances {
   "}\n"
   ""
 }
+embedded_instances {
+  id: "score_gui"
+  data: "components {\n"
+  "  id: \"score_gui\"\n"
+  "  component: \"/assets/GUI/score_gui.gui\"\n"
+  "}\n"
+  ""
+}

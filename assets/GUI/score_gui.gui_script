@@ -1,0 +1,13 @@
+local score = 0
+
+function init(self)
+	msg.post(".", "acquire_input_focus") -- Para recibir mensajes
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("update_score") then
+		score = message.points
+		local node = gui.get_node("score_label")
+		gui.set_text(node, "Score: " .. score)
+	end
+end
