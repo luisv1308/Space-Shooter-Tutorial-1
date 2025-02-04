@@ -101,6 +101,11 @@ function on_message(self, message_id, message, sender)
         print("Nueva velocidad de disparo:", self.weapon.fire_rate)
     end
     if message_id == hash("disable_control") then
+        -- Parar generacion de enemigos
+        msg.post("/enemy_manager#enemy_manager", "stop_spawning")
+        -- enviar mensaje de desactivación a todos los enemigos
+       msg.post("/enemy_manager#enemy_manager", "clear_enemies")
+
         -- Limpiar inputs de movimiento
         self.inputs[input_left] = nil
         self.inputs[input_right] = nil

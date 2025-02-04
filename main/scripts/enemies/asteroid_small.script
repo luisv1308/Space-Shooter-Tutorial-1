@@ -36,11 +36,17 @@ function update(self, dt)
        pos.y < -50 or pos.y > Config.screen_height + 50 then
         go.delete() -- Destruir el asteroide
     end
+
+
 end
 
 function on_message(self, message_id, message, sender)
     if message_id == hash("collision_response") then
         -- Destruir el asteroide pequeño al ser golpeado
+        call_explotion(self)
+        go.delete()
+    end
+    if message_id == hash("die") then
         call_explotion(self)
         go.delete()
     end

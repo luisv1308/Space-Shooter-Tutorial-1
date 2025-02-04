@@ -2,6 +2,8 @@ local Config = require "main/config"
 local enemy_info_manager = require "main/scripts/managers/enemy_info_manager"
 local Utilities = require "main/scripts/utilities"
 local SMALL_ASTEROID_FACTORY = "#small_asteroid_factory"
+local asteroids = {}
+local small_asteroids = {}
 
 go.property("level", 1)
 -- enemy_manager.script
@@ -21,13 +23,15 @@ function init(self)
     -- Cargar niveles de enemigos
     load_level_formations(self, self.current_level)
 
+    self.stop_spawning = false
+
 end
 
 function update(self, dt)
     self.spawn_timer = self.spawn_timer + dt
     local formations_count = #self.spawn_formations
     
-    if self.spawn_timer >= Config.enemies.spawn_time and self.counter < formations_count then -- Cada 5 segundos
+    if self.spawn_timer >= Config.enemies.spawn_time and self.counter < formations_count and not self.stop_spawning then -- Cada 5 segundos
         --self.spawn_formations = Utilities:shuffle_table(self.spawn_formations)
 
         local formation = self.spawn_formations[self.formation_index]
@@ -81,7 +85,7 @@ function update(self, dt)
     end
 
     -- Lanzar asteroides
-    if self.asteroids_total > 0 then
+    if self.asteroids_total > 0 and not self.stop_spawning then
         spawn_asteroids(self, self.current_level)
         self.asteroids_total = self.asteroids_total - 1
     end
@@ -100,8 +104,16 @@ end
 
 function on_message(self, message_id, message, sender)
     if message_id == hash("remove_enemy") then
-        --print("Enemigo removido")
-        remove_enemy(self, message.enemy_id)
+        --print("Enemigo removido", message.enemy)
+        remove_enemy(self, message.enemy)
+    end
+    -- Remover asteroide largo
+    if message_id == hash("remove_large_asteroid") then
+        remove_large_asteroid(self, message.enemy)
+    end
+    -- Remover asteroide pequeño
+    if message_id == hash("remove_small_asteroid") then
+        remove_small_asteroid(self, message.enemy)
     end
     if message_id == hash("level_cleared") then
         self.current_level = self.current_level + 1
@@ -116,6 +128,15 @@ function on_message(self, message_id, message, sender)
     if message_id == hash("create_small_asteroids") then
         -- Crear asteroides pequeños
         create_small_asteroids(self, message.position, message.count)
+    end
+    -- Borrar todos los enemigos
+    if message_id == hash("clear_enemies") then
+        clear_all_enemies(self)
+        clear_all_asteroids(self)
+    end
+    -- Parar la generación de enemigos
+    if message_id == hash("stop_spawning") then
+        self.stop_spawning = true
     end
 end
 
@@ -258,11 +279,12 @@ function spawn_asteroids(self, level)
     for i = 1, level do
         local x = math.random(40, Config.screen_width - 40)
         local y = math.random(Config.screen_height + 50, Config.screen_height + 100)
-        local enemy = factory.create("#factory_asteroid", vmath.vector3(x, y, 0), nil, {
+        local asteroid_id  = factory.create("#factory_asteroid", vmath.vector3(x, y, 0), nil, {
     
         })
-        table.insert(self.enemies, enemy)
-        enemy_info_manager.add_enemy(enemy)
+        asteroids[asteroid_id] = "asteroid" .. i
+        --table.insert(self.enemies, asteroid_id )
+        --enemy_info_manager.add_enemy(asteroid_id )
     end
 end
 
@@ -270,8 +292,9 @@ function create_small_asteroids(self, position, count)
     for i = 1, count do
         -- Generar asteroides pequeños en posiciones aleatorias cercanas
         local offset = vmath.vector3(math.random(-10, 10), math.random(-10, 10), 0)
-        local asteroid = factory.create(SMALL_ASTEROID_FACTORY, position + offset)
-        table.insert(self.enemies, asteroid)
+        local asteroid_id = factory.create(SMALL_ASTEROID_FACTORY, position + offset)
+        small_asteroids[asteroid_id] = "small_asteroid" .. i
+        
     end
 end
 
@@ -286,7 +309,52 @@ end
 
 function clear_all_enemies(self)
     for _, enemy_id in ipairs(self.enemies) do
-        go.delete(enemy_id)
+        -- Si es nill pasar al siguiente
+        if enemy_id and go.exists(enemy_id) then
+            go.delete(enemy_id)
+        end
     end
     self.enemies = {}
 end
+
+function remove_large_asteroid(self, asteroid_id)
+    -- Si es nill pasar al siguiente
+    if asteroid_id and go.exists(asteroid_id) then
+        -- Enviar mensaje de destrucción al asteroide
+        asteroids[asteroid_id] = nil
+    end
+    
+end
+
+function remove_small_asteroid(self, asteroid_id)
+    -- Si es nill pasar al siguiente
+    if asteroid_id and go.exists(asteroid_id) then
+        -- Enviar mensaje de destrucción al asteroide
+        small_asteroids[asteroid_id] = nil
+    end
+    
+end
+
+
+function clear_all_asteroids(self)
+    for key, asteroid_id in pairs(asteroids) do
+        -- Si es nil, pasar al siguiente
+        if asteroid_id and go.exists(key) then
+            -- Enviar mensaje de destrucción al asteroide
+            msg.post(key, "die")
+        end
+    end
+    
+    -- Eliminar small_asteroids 
+    for key, asteroid_id in pairs(small_asteroids) do
+        -- Si es nil, pasar al siguiente
+        if asteroid_id and go.exists(key) then
+            -- Enviar mensaje de destrucción al asteroide
+            msg.post(key, "die")
+        end
+    end
+    
+    -- Limpiar tablas
+    asteroids = {}
+    small_asteroids = {}
+end     
