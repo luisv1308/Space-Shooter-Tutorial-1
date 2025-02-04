@@ -101,6 +101,11 @@ function on_message(self, message_id, message, sender)
         print("Nueva velocidad de disparo:", self.weapon.fire_rate)
     end
     if message_id == hash("disable_control") then
+        -- Limpiar inputs de movimiento
+        self.inputs[input_left] = nil
+        self.inputs[input_right] = nil
+        self.inputs[input_up] = nil
+        self.inputs[input_down] = nil
         -- Limpiar input shooting
         self.inputs[input_shoot] = nil
         self.state_machine:set_state("idle")

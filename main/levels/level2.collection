@@ -192,3 +192,29 @@ embedded_instances {
     z: 1.0
   }
 }
+embedded_instances {
+  id: "music"
+  data: "embedded_components {\n"
+  "  id: \"music_background\"\n"
+  "  type: \"sound\"\n"
+  "  data: \"sound: \\\"/assets/sounds/music/Hurry! (LOOP).ogg\\\"\\n"
+  "looping: 1\\n"
+  "gain: 0.5\\n"
+  "\"\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"music_success\"\n"
+  "  type: \"sound\"\n"
+  "  data: \"sound: \\\"/assets/sounds/music/Success.ogg\\\"\\n"
+  "\"\n"
+  "}\n"
+  ""
+}
+embedded_instances {
+  id: "level_script"
+  data: "components {\n"
+  "  id: \"level_script\"\n"
+  "  component: \"/main/scripts/levels/level_script.script\"\n"
+  "}\n"
+  ""
+}
