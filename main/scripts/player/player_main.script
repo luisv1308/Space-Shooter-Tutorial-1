@@ -23,6 +23,8 @@ local input_shoot = hash("shoot")
 
 
 function init(self)
+    -- Habilitar el control
+    self.control_enabled = true
     -- Registra la URL del jugador en el módulo
     PlayerManager.set_player(msg.url())
 
@@ -84,6 +86,36 @@ function on_message(self, message_id, message, sender)
         self.weapon.fire_rate =  self.weapon.fire_rate * message.effect
         self.powerup_timer = message.duration
         print("Nueva velocidad de disparo:", self.weapon.fire_rate)
+    end
+    if message_id == hash("disable_control") then
+        -- Limpiar input shooting
+        self.inputs[input_shoot] = nil
+        self.state_machine:set_state("idle")
+        -- Desactivar colisión
+        msg.post("#collisionobject", "disable")
+        self.control_enabled = false
+    elseif message_id == hash("warp_out") then
+        -- Fase 1: Mover la nave al centro de la pantalla
+        local center_x = 240  -- Mitad de 480
+        local center_y = 320  -- Mitad de 640
+
+        go.animate(".", "position", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(center_x, center_y, 0), go.EASING_OUTQUAD, 1, 0, function()
+            -- Parar musica de background
+            msg.post("/music#music_background", "stop_sound")
+            -- 🎵 Aquí puedes reproducir la música de escape
+            msg.post("/music#music_success", "play_sound") 
+            -- Cambiar velocidad de background
+            msg.post("/bg_far#background", "light_speed", { speed = 100 })
+
+            -- Fase 2: Esperar un momento y luego salir disparado a toda velocidad
+            timer.delay(3, false, function()
+                print("Salida de la nave")
+                go.animate(".", "position.y", go.PLAYBACK_ONCE_FORWARD, 800, go.EASING_INCUBIC, 0.5, 0, function()
+                    -- 🚀 Después de salir, cargar la siguiente pantalla
+                    msg.post("main:/game_manager", "level_cleared")
+                end)
+            end)
+        end)
     end
 end
 
@@ -223,9 +255,15 @@ function has_movement_input(self)
 end
 
 function on_input(self, action_id, action)
+    if not self.control_enabled then return end
+    
     if action.pressed then
         self.inputs[action_id] = true
     elseif action.released then
         self.inputs[action_id] = false
     end
+end
+
+function disable_control(self)
+    self.control_enabled = false
 end

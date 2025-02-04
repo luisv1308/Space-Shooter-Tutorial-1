@@ -43,6 +43,7 @@ function on_message(self, message_id, message, sender)
         --dispatcher.broadcast(hash("current_level"), { level = self.current_level, base = self.current_level_base.socket })
        -- msg.post("@broadcast", "current_level", { level = self.current_level, base = self.current_level_base.socket })
         print("Nivel cargado y activado:", current_level)
+       
     elseif message_id == hash("proxy_unloaded") then
         -- Una vez descargado, cargar el nuevo nivel
         current_level = current_level + 1

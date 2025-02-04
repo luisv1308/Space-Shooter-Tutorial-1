@@ -94,13 +94,13 @@ function update(self, dt)
     if self.asteroids_timer >= self.asteroids_interval then
         self.asteroids_timer = self.asteroids_timer - self.asteroids_interval -- Reiniciar el temporizador
         self.asteroids_total = self.asteroids_total + 1 -- Cambiar la variable
-        print("Variable actual:", self.asteroids_total)
+        --print("Variable actual:", self.asteroids_total)
     end
 end
 
 function on_message(self, message_id, message, sender)
     if message_id == hash("remove_enemy") then
-        print("Enemigo removido")
+        --print("Enemigo removido")
         remove_enemy(self, message.enemy_id)
     end
     if message_id == hash("level_cleared") then
@@ -109,7 +109,7 @@ function on_message(self, message_id, message, sender)
     end
     if message_id == hash("current_level") then
         -- El nivel actual se encuentra en message.level
-        print("Nivel actual recibido:", message.level)
+        --print("Nivel actual recibido:", message.level)
         -- Puedes guardar el nivel o realizar alguna acción específica
         self.current_level = message.level
     end
@@ -250,7 +250,7 @@ function spawn_enemies_formations(self, formation_type, count, level, movement_p
 end
 
 function spawn_asteroids(self, level)
-    print("Spawning asteroids")
+    --print("Spawning asteroids")
     level = level * 2
     for i = 1, level do
         local x = math.random(40, Config.screen_width - 40)

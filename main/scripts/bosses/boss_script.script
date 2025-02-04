@@ -182,15 +182,18 @@ function die(self)
     end
     
     self.is_alive = false
+
+    -- Desactivar control del jugador
+    msg.post("player", "disable_control")
+
+    -- Hacer que la nave salga rápidamente
+    msg.post("player", "warp_out")
     
     go.animate(".", "scale", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(0,0,0), go.EASING_INOUTQUAD, 1.5, 0, function()
         -- Enviar mensaje a dialogo
         msg.post("/dialogue_gui#dialogue", "start_dialogue", { text = "Level cleared! Well done!", speed = 0.05, texture = "friend_robot" })
         -- Esperar 3 segundos y enviar mensaje de cargar nuevo nivel
         timer.delay(3.0, false, function()
-            --msg.post(msg.url("/game_manager#game_manager"), "load_level", { level = "main" })
-            msg.post("main:/game_manager", "level_cleared")
-
             go.delete()
         end)
     end)

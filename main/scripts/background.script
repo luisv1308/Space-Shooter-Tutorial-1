@@ -1,10 +1,10 @@
 function init(self)
     -- Configura las velocidades para cada capa
     self.layers = {
-        { id = go.get_id("bg_far"), speed_y = 60, offset_x = -50, speed_x = 5 },
-        { id = go.get_id("bg_mid"), speed_y = 90, offset_x = 30, speed_x = 10 },
-        { id = go.get_id("bg_near_1"), speed_y = 120, offset_x = 70, speed_x = 15 },
-        { id = go.get_id("bg_near_2"), speed_y = 120, offset_x = 70, speed_x = 15 },
+        { id = go.get_id("bg_far"), speed_y = 160, offset_x = -50, speed_x = 5 },
+        { id = go.get_id("bg_mid"), speed_y = 190, offset_x = 30, speed_x = 10 },
+        { id = go.get_id("bg_near_1"), speed_y = 220, offset_x = 70, speed_x = 15 },
+        { id = go.get_id("bg_near_2"), speed_y = 240, offset_x = 70, speed_x = 15 },
     }
     self.height = 256 * 3.2
 
@@ -38,5 +38,14 @@ function update(self, dt)
         
 
         go.set_position(pos, layer.id)
+    end
+end
+
+-- Mensajes
+function on_message(self, message_id, message, sender)
+    if message_id == hash("light_speed") then
+        for _, layer in ipairs(self.layers) do
+            layer.speed_y = layer.speed_y * 4.1
+        end
     end
 end
