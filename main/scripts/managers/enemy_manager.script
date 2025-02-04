@@ -225,9 +225,12 @@ function spawn_enemies_formations(self, formation_type, count, level, movement_p
             local col = (i - 1) % cols
             x = 40 + col * spacing_x
             y = screen_height + 200 - row * spacing_y
-        elseif formation_type == "side_by_side" then
+        elseif formation_type == "side_by_side_right" then
             y = 360 -- Altura inicial (ajusta según tu pantalla)
             x = -200 + (i * spacing_x) -- Fuera del lado izquierdo de la pantalla
+        elseif formation_type == "side_by_side_left" then
+            y = 360 -- Altura inicial (ajusta según tu pantalla)
+            x = screen_width + 300 - (i * spacing_x) -- Fuera del lado derecho de la pantalla
         end
         local powerup_type = nil
         if powerup and powerup.enemy_number == i then

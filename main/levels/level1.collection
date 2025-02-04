@@ -210,3 +210,34 @@ embedded_instances {
   "}\n"
   ""
 }
+embedded_instances {
+  id: "targets"
+  children: "target_center"
+  children: "target_left"
+  children: "target_right"
+  data: ""
+}
+embedded_instances {
+  id: "target_left"
+  data: ""
+  position {
+    x: 140.0
+    y: 300.0
+  }
+}
+embedded_instances {
+  id: "target_center"
+  data: ""
+  position {
+    x: 240.0
+    y: 300.0
+  }
+}
+embedded_instances {
+  id: "target_right"
+  data: ""
+  position {
+    x: 340.0
+    y: 300.0
+  }
+}

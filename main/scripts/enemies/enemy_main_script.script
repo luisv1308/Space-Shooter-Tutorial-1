@@ -25,8 +25,25 @@ function init(self)
     msg.post("#sprite_fighter", "disable")
     -- Enemy URL
     self.url = go.get_id()
-    -- Obtén la URL del jugador desde el módulo
-    player_url = PlayerManager.get_player()
+    
+
+     -- Crear una table con los targets url 
+     self.targets = {
+        ["player"] = PlayerManager.get_player(),
+        ["target_left"] = "/target_left",
+        ["target_right"] = "/target_right",
+        ["target_center"] = "/target_center"
+     }
+
+     -- Extraer las claves (keys) en una lista para elegir aleatoriamente
+    local keys = {}
+    for key in pairs(self.targets) do
+        table.insert(keys, key)
+    end
+
+    -- Escoger un key aleatorio y obtener su valor
+    local random_key = keys[math.random(#keys)]
+    player_url = self.targets[random_key]  -- Obtener la URL asociada
     --self.target = self.target or nil -- Puede ser el jugador u otro objetivo
 	-- Inicializar enemigo por defacto
 	if self.enemy_type == hash("scout") then

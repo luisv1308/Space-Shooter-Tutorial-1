@@ -1,6 +1,14 @@
 local squads = {
     side_by_side_5_fighter = {
-        type = "side_by_side", count = 5, movement_pattern = hash("side_by_side"),
+        type = "side_by_side", count = 5, movement_pattern = hash("side_by_side_right"),
+        enemy_type = hash("fighter")
+    },
+    side_by_side_left_5_fighter = {
+        type = "side_by_side_left", count = 5, movement_pattern = hash("side_by_side_left"),
+        enemy_type = hash("fighter")
+    },
+    side_by_side_right_5_fighter = {
+        type = "side_by_side_right", count = 5, movement_pattern = hash("side_by_side_right"),
         enemy_type = hash("fighter")
     },
     side_by_side_5_fighter_powerup_other = {
