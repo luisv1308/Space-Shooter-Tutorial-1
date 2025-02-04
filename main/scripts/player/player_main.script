@@ -24,7 +24,7 @@ local input_shoot = hash("shoot")
 
 function init(self)
     -- Habilitar el control
-    self.control_enabled = true
+    self.control_enabled = false
     -- Registra la URL del jugador en el módulo
     PlayerManager.set_player(msg.url())
 
@@ -56,10 +56,23 @@ function init(self)
     --print("Jugador creado: " .. self.player.name)
     -- Inicializar la máquina de estados
     ini_state_machine(self)
-    -- Configuración inicial del jugador
-    self.position = go.get_position()
+    
     self.inputs = {} -- Tabla para rastrear inputs
     --print("ID del jugador: ", go.get_id("/bounty_hunter_bullet_factory"))
+    -- Animar hacia la posición de inicio (x: 240, y: 200)
+     -- Posicionar el jugador fuera de la pantalla (abajo)
+     local start_x = 240 -- Centro de la pantalla (480 de ancho)
+     local start_y = 700 -- Fuera de la pantalla (640 de alto + extra)
+ 
+     go.set_position(vmath.vector3(start_x, start_y, 0))
+    local target_y = 200
+    go.animate(".", "position.y", go.PLAYBACK_ONCE_FORWARD, target_y, go.EASING_OUTQUAD, 2.5, 0, function(self)
+        -- Configuración inicial del jugador
+        self.position = go.get_position()
+        self.control_enabled = true
+        self.state_machine:set_state("idle")
+        msg.post("#collisionobject", "enable")
+    end)
 
 end
 
