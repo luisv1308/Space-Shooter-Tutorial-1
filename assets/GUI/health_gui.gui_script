@@ -1,5 +1,7 @@
 local hearts = {} -- Lista de corazones en la GUI
 local heart_template = nil -- Nodo base para clonar
+local countdown_time = 3 -- Tiempo inicial en segundos
+local countdown_active = false -- Para controlar si la cuenta está en curso
 
 function init(self)
     heart_template = gui.get_node("heart_template") -- El nodo base del corazón (puede estar oculto)
@@ -13,9 +15,18 @@ function final(self)
 end
 
 function update(self, dt)
-	-- Add update code here
-	-- Learn more: https://defold.com/manuals/script/
-	-- Remove this function if not needed
+    if countdown_active then
+        local scale = 1 + (1 - (countdown_time % 1)) * 0.5 -- Hace un efecto de "zoom"
+        gui.set_scale(gui.get_node("countdown"), vmath.vector3(scale, scale, 1))
+        countdown_time = countdown_time - dt -- Reducir el tiempo
+        if countdown_time <= 0 then
+            countdown_active = false -- Detener el countdown
+            --gui.set_text(gui.get_node("countdown"), "GO!") -- Mostrar "GO!" al final
+            --timer.delay(1, false, function() gui.set_enabled(gui.get_node("countdown"), false) end) -- Ocultar después de 1s
+        else
+            gui.set_text(gui.get_node("countdown"), tostring(math.ceil(countdown_time))) -- Actualizar texto
+        end
+    end
 end
 
 function on_message(self, message_id, message, sender)
@@ -23,8 +34,22 @@ function on_message(self, message_id, message, sender)
 	if message_id == hash("set_health") then
 		update_hearts(message.health, message.max_health)
 	end
+    -- Comenzar countdown
+    if message_id == hash("start_countdown") then
+        start_countdown(message.time)
+    end
 end
 
+function start_countdown(time)
+    countdown_time = time
+    countdown_active = true
+    gui.set_text(gui.get_node("countdown"), tostring(countdown_time)) -- Mostrar el número inicial
+end
+
+function stop_countdown()
+    countdown_active = false
+    --gui.set_enabled(gui.get_node("countdown"), false) -- Ocultar el nodo
+end
 
 function update_hearts(hp, max_hp)
     -- Borrar corazones actuales
