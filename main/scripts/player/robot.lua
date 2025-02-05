@@ -4,7 +4,7 @@ local Robot = Player:new()
 
 function Robot:new()
     -- Crear una nueva instancia basada en Player
-    local instance = Player.new(self, "Robot Pilot", 120, 180, 20, 0.3, 0)
+    local instance = Player.new(self, "Robot Pilot", 30, 3,180, 20, 0.3, 0)
     setmetatable(instance, { __index = self })
     
     -- Atributos específicos del Robot

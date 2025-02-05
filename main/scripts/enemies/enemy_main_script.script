@@ -147,7 +147,7 @@ function init_enemy_state_machine(self)
             self.enemy:apply_movement_pattern(dt)
             if self.enemy.movement_pattern ~= hash("hit_and_run") then
                 if self.enemy:is_player_in_attack_range(player_url) then
-                    self.state_machine:set_state("attacking")
+                    self.state_machine:set_state("attacking") 
                 end
             end
             if self.enemy:has_reached_target(self.enemy.center_screen) then

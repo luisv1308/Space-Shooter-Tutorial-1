@@ -4,7 +4,7 @@ local BountyHunter = Player:new()
 
 function BountyHunter:new()
     -- Crear una nueva instancia basada en Player
-    local instance = Player.new(self, "Bounty Hunter", 100, 300, 15, 1.25, 0)
+    local instance = Player.new(self, "Bounty Hunter", 30, 3, 300, 15, 1.25, 0)
     setmetatable(instance, { __index = self })
 
     -- Atributos específicos de Bounty Hunter

@@ -1,0 +1,60 @@
+local hearts = {} -- Lista de corazones en la GUI
+local heart_template = nil -- Nodo base para clonar
+
+function init(self)
+    heart_template = gui.get_node("heart_template") -- El nodo base del corazón (puede estar oculto)
+    gui.set_enabled(heart_template, false) -- Ocultarlo
+end
+
+function final(self)
+	-- Add finalization code here
+	-- Learn more: https://defold.com/manuals/script/
+	-- Remove this function if not needed
+end
+
+function update(self, dt)
+	-- Add update code here
+	-- Learn more: https://defold.com/manuals/script/
+	-- Remove this function if not needed
+end
+
+function on_message(self, message_id, message, sender)
+	-- Actualizar la GUI de salud
+	if message_id == hash("set_health") then
+		update_hearts(message.health, message.max_health)
+	end
+end
+
+
+function update_hearts(hp, max_hp)
+    -- Borrar corazones actuales
+    for _, heart in ipairs(hearts) do
+        gui.delete_node(heart)
+    end
+    hearts = {}
+
+    -- Calcular el número de corazones
+    local num_hearts = math.ceil(max_hp / 10) -- 1 corazón cada 10 HP
+
+    for i = 1, num_hearts do
+        local heart = gui.clone_tree(heart_template) -- Clonar nodo base
+        local node = heart[hash("heart_template")]  -- Obtener nodo clonado
+        gui.set_id(node, "heart_" .. i) -- Darle un ID único
+        gui.set_enabled(node, true) -- Hacerlo visible
+        table.insert(hearts, node)
+
+        -- Posicionar corazones en fila
+        local pos = gui.get_position(node)
+        pos.x = i * 20 -- Espaciado entre corazones
+        gui.set_position(node, pos)
+
+        -- Asignar la imagen correcta según el HP
+        if hp >= i * 10 then
+            gui.play_flipbook(node, "full_heart")
+        elseif hp > (i - 1) * 10 then
+            gui.play_flipbook(node, "half_heart")
+        else
+            gui.play_flipbook(node, "empty_heart")
+        end
+    end
+end

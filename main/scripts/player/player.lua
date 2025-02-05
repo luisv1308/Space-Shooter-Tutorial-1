@@ -1,9 +1,11 @@
 local Player = {}
 
-function Player:new(name, health, speed, attack_damage, fire_rate, fire_timer)
+function Player:new(name, health, lives, speed, attack_damage, fire_rate, fire_timer)
 	local instance = {
 		name = name or "Player",
-		health = health or 100,
+		health = health or 30,
+		max_health =  40,
+		lives = lives or 3,
 		speed = speed or 200,
 		attack_damage = attack_damage or 10,
         fire_rate = fire_rate or 0.2,

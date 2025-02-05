@@ -2,6 +2,8 @@
 local formations_data  = require "main/scripts/formations"
 local dispatcher = require "main/scripts/dispatcher"
 local score = 0 -- Variable de puntaje
+local lives = 0
+local health = 0
 
 local current_level = 1
 local LEVEL_DATA = {
@@ -49,6 +51,16 @@ function on_message(self, message_id, message, sender)
         -- Una vez descargado, cargar el nuevo nivel
         current_level = current_level + 1
         load_level(self, current_level)
+    end
+
+    if message_id == hash("set_health") then
+        self.health = message.health
+        msg.post("/health_gui", "set_health", { health = self.health, max_health = message.max_health })
+    end
+
+    if message_id == hash("set_lives") then
+        self.lives = message.lives
+        msg.post("/lives_gui", "set_lives", { lives = self.lives })
     end
 
     if message_id == hash("add_score") then

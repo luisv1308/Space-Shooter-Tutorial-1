@@ -40,3 +40,11 @@ embedded_instances {
   "}\n"
   ""
 }
+embedded_instances {
+  id: "health_gui"
+  data: "components {\n"
+  "  id: \"health_gui\"\n"
+  "  component: \"/assets/GUI/health_gui.gui\"\n"
+  "}\n"
+  ""
+}

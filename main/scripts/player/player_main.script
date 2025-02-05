@@ -52,6 +52,9 @@ function init(self)
         self.sprite = "#robot_sprite" -- Cambia el sprite
         self.weapon = RobotWeapon:new(msg.url("/factories#robot_bullet_factory"))
     end
+    -- Enviar mensaje a game manager para actulizar health y lives
+    msg.post("main:/game_manager", "set_health", { health = self.player.health, max_health = self.player.max_health })
+    --msg.post("main:/game_manager", "set_lives", { lives = self.player.lives })
     msg.post(self.sprite, "enable")
     --print("Jugador creado: " .. self.player.name)
     -- Inicializar la máquina de estados

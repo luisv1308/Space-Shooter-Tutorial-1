@@ -1,0 +1,22 @@
+script: "/assets/GUI/health_gui.gui_script"
+textures {
+  name: "player_gui"
+  texture: "/assets/tiles/player_gui.tilesource"
+}
+nodes {
+  position {
+    x: 20.0
+    y: 620.0
+  }
+  scale {
+    x: 3.0
+    y: 3.0
+  }
+  type: TYPE_BOX
+  texture: "player_gui/full_heart"
+  id: "heart_template"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+material: "/builtins/materials/gui.material"
+adjust_reference: ADJUST_REFERENCE_PARENT
