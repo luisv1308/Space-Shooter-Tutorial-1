@@ -48,3 +48,11 @@ embedded_instances {
   "}\n"
   ""
 }
+embedded_instances {
+  id: "lives_gui"
+  data: "components {\n"
+  "  id: \"lives_gui\"\n"
+  "  component: \"/assets/GUI/lives_gui.gui\"\n"
+  "}\n"
+  ""
+}

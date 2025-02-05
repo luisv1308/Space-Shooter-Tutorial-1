@@ -1,0 +1,13 @@
+local lives = 0
+
+function init(self)
+	msg.post(".", "acquire_input_focus") -- Para recibir mensajes
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("set_lives") then
+		lives = message.lives
+		local node = gui.get_node("lives_label")
+		gui.set_text(node, "Lives: " .. lives)
+	end
+end
