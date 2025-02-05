@@ -56,3 +56,11 @@ embedded_instances {
   "}\n"
   ""
 }
+embedded_instances {
+  id: "weapon_gui"
+  data: "components {\n"
+  "  id: \"weapon_gui\"\n"
+  "  component: \"/assets/GUI/weapon_gui.gui\"\n"
+  "}\n"
+  ""
+}

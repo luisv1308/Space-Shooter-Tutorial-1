@@ -3,6 +3,11 @@ tile_width: 8
 tile_height: 8
 collision_groups: "default"
 animations {
+  id: "bounty_hunter"
+  start_tile: 8
+  end_tile: 8
+}
+animations {
   id: "bullet1"
   start_tile: 1
   end_tile: 1
@@ -21,6 +26,11 @@ animations {
   id: "bullet4"
   start_tile: 15
   end_tile: 15
+}
+animations {
+  id: "green_boomerang"
+  start_tile: 12
+  end_tile: 12
 }
 animations {
   id: "laser"

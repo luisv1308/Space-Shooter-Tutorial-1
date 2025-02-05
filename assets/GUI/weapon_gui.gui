@@ -1,0 +1,41 @@
+script: "/assets/GUI/weapon_gui.gui_script"
+textures {
+  name: "bullets"
+  texture: "/assets/tiles/bullets.tilesource"
+}
+textures {
+  name: "gui"
+  texture: "/assets/tiles/gui.tilesource"
+}
+nodes {
+  position {
+    x: 380.0
+    y: 620.0
+  }
+  scale {
+    x: 2.0
+    y: 2.0
+  }
+  type: TYPE_BOX
+  texture: "gui/white_box"
+  id: "gui_box"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: 381.0
+    y: 620.0
+  }
+  scale {
+    x: 3.0
+    y: 3.0
+  }
+  type: TYPE_BOX
+  texture: "bullets/bounty_hunter"
+  id: "weapon_box1"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+material: "/builtins/materials/gui.material"
+adjust_reference: ADJUST_REFERENCE_PARENT
