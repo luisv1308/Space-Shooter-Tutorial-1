@@ -1,0 +1,78 @@
+function init(self)
+	self.boss_id = msg.url("boss")
+    self.growing = true
+    -- self.scale = go.get_scale()
+    -- self.scale.y = 0.1  -- Empezar pequeño
+    -- go.set_scale(self.scale)
+
+	-- Tamaño original del sprite
+    self.original_size = go.get("#sprite", "size")
+
+    -- Iniciamos con un tamaño mínimo en Y
+    self.current_size = vmath.vector3(self.original_size.x, 2, 0)
+    go.set("#sprite", "size", self.current_size)
+	go.set("#sprite", "tint", vmath.vector4(1, 1, 1, 0)) -- (R, G, B, Alfa)
+	-- Esperar medio segundo para que el laser se vea
+	timer.delay(0.2, false, function()
+		self.laser_visible = true
+		go.set("#sprite", "tint", vmath.vector4(1, 1, 1, 1)) -- (R, G, B, Alfa)
+		blink_laser(self)
+		sound.play("#sound_fire")
+	end)
+end
+
+function update(self, dt)
+    if not self.boss_id then
+        return
+    end
+	local growth_speed = 100  -- Velocidad de crecimiento
+    local max_size_y = 60   -- Tamaño máximo
+    -- 🟢 Seguir la posición del jefe en X e Y (incluyendo movimiento final)
+    local boss_pos = go.get_position(self.boss_id)
+    local pos = go.get_position()
+    pos.x = boss_pos.x
+    pos.y = boss_pos.y - ((self.current_size.y - 0.1) * 3)  -- Ajustar crecimiento
+
+    -- 🟢 Crecimiento progresivo con Tiled Sprite
+    if self.growing then
+
+        local new_size_y = math.min(self.current_size.y + (growth_speed * dt), max_size_y)
+		-- Calculamos cuánto creció
+        local growth_diff = new_size_y - self.current_size.y
+		self.current_size.y = new_size_y
+		go.set("#sprite", "size", self.current_size)
+        if self.current_size.y >= max_size_y then
+            self.current_size.y = max_size_y
+            self.growing = false
+        end
+    end
+
+    go.set_position(pos)
+end
+
+function blink_laser(self)
+    go.animate("#sprite", "tint.w", go.PLAYBACK_LOOP_PINGPONG, 0, go.EASING_LINEAR, 0.1)
+end
+
+
+function on_message(self, message_id, message, sender)
+	-- Detectar contacto con player
+	if message_id == hash("contact_point_response") then
+		if message.other_group == hash("player") then
+			-- Enviar mensaje de daño al player
+			msg.post(message.other_id, "take_damage", { amount = 10 })
+		end
+	end
+
+    if message_id == hash("set_boss") then
+        self.boss_id = message.boss_id  -- Guardar el ID del jefe
+    elseif message_id == hash("destroy") then
+        go.delete()
+    end
+end
+
+function final(self)
+	-- Limpieza si es necesario
+	-- Parar sonido
+	sound.stop("#sound_fire")
+end

@@ -154,10 +154,10 @@ end
 
 -- Realiza el ataque
 function Enemy:perform_attack(player_url)
-    print("El enemigo está atacando al jugador")
+    --print("El enemigo está atacando al jugador")
     local my_position = go.get_position()
     local player_position = self:get_player_position(player_url)
-    print("Posicion del jugador: " .. player_position.x .. ", " .. player_position.y)
+    --print("Posicion del jugador: " .. player_position.x .. ", " .. player_position.y)
     -- Dispara al jugador
     if self.weapon then
         self.weapon:fire(my_position, player_position)
@@ -177,7 +177,7 @@ function  Enemy:apply_movement_pattern(dt)
     elseif self.movement_pattern == hash(string.lower("side_by_side_right")) then
         side_by_side_right_movement(self, dt)
     elseif self.movement_pattern == hash(string.lower("side_by_side_left")) then
-        print("side_by_side_left")
+        --print("side_by_side_left")
         side_by_side_left_movement(self, dt)
     end
     go.set_position(self.position, go.get_id())

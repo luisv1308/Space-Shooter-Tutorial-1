@@ -1,0 +1,11 @@
+images {
+  image: "/assets/laser.png"
+}
+animations {
+  id: "laser_blue"
+  images {
+    image: "/assets/laser.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+}
+extrude_borders: 2

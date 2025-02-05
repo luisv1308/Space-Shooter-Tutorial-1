@@ -42,6 +42,7 @@ embedded_components {
   "group: \"player\"\n"
   "mask: \"enemy\"\n"
   "mask: \"powerup\"\n"
+  "mask: \"enemy_bullet\"\n"
   "embedded_collision_shape {\n"
   "  shapes {\n"
   "    shape_type: TYPE_BOX\n"

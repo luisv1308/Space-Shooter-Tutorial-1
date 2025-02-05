@@ -57,7 +57,7 @@ function update(self, dt)
     end
 
     self.attack_timer = self.attack_timer + dt
-    if self.attack_timer >= 1.5 and self.hp > 0 then
+    if self.attack_timer >= 5 and self.hp > 0 then
         shoot_independent(self)
         self.attack_timer = 0
     end
@@ -82,42 +82,72 @@ function move_desperate(self, dt)
     go.set_position(new_pos)
 end
 
--- Función de disparo independiente: cada cañón dispara un patrón distinto
+-- -- Función de disparo independiente: cada cañón dispara un patrón distinto
+-- function shoot_independent(self)
+--     local boss_pos = go.get_position()
+--     -- Define los retrasos (en segundos) para cada cañón
+--     local delays = {
+--         central = 0,   -- dispara inmediatamente
+--         left = 1.5,    -- dispara 0.5 segundos después
+--         right = 1.5    -- dispara 1.5 segundos después
+--     }
+
+--     for cannon, offset in pairs(self.cannon_offsets) do
+		
+--         local spawn_position = boss_pos + offset
+--         local delay = delays[cannon] or 0  -- en caso de que no esté definido, se usa 0
+
+--         timer.delay(delay, false, function()
+-- 			if self.hp <= 0 then
+-- 				return
+-- 			end
+-- 			boss_pos = go.get_position()
+-- 			spawn_position = boss_pos + offset
+--             if cannon == "central" then
+--                 -- Disparo recto: un único proyectil hacia abajo
+--                 spread_shot(self, spawn_position)
+
+--             elseif cannon == "left" then
+--                 -- Disparo en abanico desde el cañón izquierdo: tres proyectiles en ángulos distintos
+-- 				burst_shoot(self, spawn_position, offset)
+
+--             elseif cannon == "right" then
+--                 -- Disparo en ráfaga desde el cañón derecho: 3 proyectiles en secuencia rápida
+--                 burst_shoot(self, spawn_position, offset)
+--             end
+--         end)
+--     end
+-- end
+
 function shoot_independent(self)
     local boss_pos = go.get_position()
-    -- Define los retrasos (en segundos) para cada cañón
-    local delays = {
-        central = 0,   -- dispara inmediatamente
-        left = 1.5,    -- dispara 0.5 segundos después
-        right = 1.5    -- dispara 1.5 segundos después
-    }
+    local central_offset = self.cannon_offsets.central or vmath.vector3(0, -20, 0) -- Ajusta según la posición del láser
+    local spawn_position = boss_pos + central_offset
 
-    for cannon, offset in pairs(self.cannon_offsets) do
-		
-        local spawn_position = boss_pos + offset
-        local delay = delays[cannon] or 0  -- en caso de que no esté definido, se usa 0
-
-        timer.delay(delay, false, function()
-			if self.hp <= 0 then
-				return
-			end
-			boss_pos = go.get_position()
-			spawn_position = boss_pos + offset
-            if cannon == "central" then
-                -- Disparo recto: un único proyectil hacia abajo
-                spread_shot(self, spawn_position)
-
-            elseif cannon == "left" then
-                -- Disparo en abanico desde el cañón izquierdo: tres proyectiles en ángulos distintos
-				burst_shoot(self, spawn_position, offset)
-
-            elseif cannon == "right" then
-                -- Disparo en ráfaga desde el cañón derecho: 3 proyectiles en secuencia rápida
-                burst_shoot(self, spawn_position, offset)
-            end
-        end)
-    end
+    -- Solo disparamos desde el cañón central
+    timer.delay(0, false, function()
+        if self.hp <= 0 then
+            return
+        end
+        boss_pos = go.get_position()
+        spawn_position = boss_pos + central_offset
+        fire_laser(self, spawn_position) -- Función para disparar el láser
+    end)
 end
+
+function fire_laser(self, spawn_position)
+    if self.laser_id then
+        msg.post(self.laser_id, "destroy")  -- Eliminar el láser anterior si existe
+    end
+
+    self.laser_id = factory.create("#projectile_factory", spawn_position)
+
+    -- 🟢 Decirle al láser que siga al jefe
+    msg.post(self.laser_id, "set_boss", { boss_id = go.get_id() })
+end
+
+
+
 
 function central_shot(self, spawn_position)
 	factory.create("#projectile_factory", spawn_position)
@@ -158,6 +188,10 @@ end
 
 -- Función de muerte del boss
 function die(self)
+    -- Destruir laser 
+    if self.laser_id then
+        msg.post(self.laser_id, "destroy")  -- Eliminar el láser anterior si existe
+    end
     -- Enviar mensaje a game manager para actualizar score
     msg.post(msg.url("main:/game_manager"), "add_score", { points = 100 })
 

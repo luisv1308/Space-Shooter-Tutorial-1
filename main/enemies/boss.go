@@ -49,7 +49,7 @@ embedded_components {
 embedded_components {
   id: "projectile_factory"
   type: "factory"
-  data: "prototype: \"/main/weapons/enemies/boss_projectile.go\"\n"
+  data: "prototype: \"/main/weapons/enemies/boss_laser.go\"\n"
   ""
 }
 embedded_components {

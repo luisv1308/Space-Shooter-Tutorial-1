@@ -22,4 +22,10 @@ animations {
   start_tile: 15
   end_tile: 15
 }
+animations {
+  id: "laser"
+  start_tile: 49
+  end_tile: 51
+  fps: 10
+}
 extrude_borders: 2
