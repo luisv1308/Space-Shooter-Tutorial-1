@@ -77,6 +77,18 @@ function on_message(self, message_id, message, sender)
     if message_id == hash("stop_countdown") then
         msg.post("/health_gui", "stop_countdown")
     end
+
+    if message_id == hash("player_died") then
+        self.lives = self.lives - 1
+        msg.post("/lives_gui", "update_lives", { lives = self.lives })
+
+        if self.lives > 0 then
+            msg.post(message.player_url, "respawn", { x = message.x, y = message.y })
+        else
+            -- Game Over
+            msg.post("main:/ui", "show_game_over")
+        end
+    end
 end
 
 function load_level_formations(self, level)

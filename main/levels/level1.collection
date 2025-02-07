@@ -213,6 +213,13 @@ embedded_instances {
   "  data: \"sound: \\\"/assets/sounds/music/Prove It (LOOP) x.wav\\\"\\n"
   "\"\n"
   "}\n"
+  "embedded_components {\n"
+  "  id: \"sound_hurt\"\n"
+  "  type: \"sound\"\n"
+  "  data: \"sound: \\\"/assets/sounds/super pack/Hit_hurt 4.wav\\\"\\n"
+  "gain: 0.8\\n"
+  "\"\n"
+  "}\n"
   ""
 }
 embedded_instances {
@@ -252,5 +259,23 @@ embedded_instances {
   position {
     x: 340.0
     y: 300.0
+  }
+}
+embedded_instances {
+  id: "camera"
+  data: "embedded_components {\n"
+  "  id: \"camera\"\n"
+  "  type: \"camera\"\n"
+  "  data: \"aspect_ratio: 1.0\\n"
+  "fov: 0.7854\\n"
+  "near_z: -1.0\\n"
+  "far_z: 1.0\\n"
+  "orthographic_projection: 1\\n"
+  "\"\n"
+  "}\n"
+  ""
+  position {
+    x: 240.0
+    y: 320.0
   }
 }

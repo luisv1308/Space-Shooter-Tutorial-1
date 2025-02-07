@@ -10,4 +10,10 @@ function on_message(self, message_id, message, sender)
 		local node = gui.get_node("lives_label")
 		gui.set_text(node, "Lives: " .. lives)
 	end
+	-- Updates lives
+	if message_id == hash("update_lives") then
+		lives = message.lives
+		local node = gui.get_node("lives_label")
+		gui.set_text(node, "Lives: " .. lives)
+	end
 end

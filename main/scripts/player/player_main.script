@@ -93,15 +93,32 @@ function on_message(self, message_id, message, sender)
          -- Efecto de parpadeo y cambio de color
         -- Efecto de parpadeo y cambio de color
         blink_effect(self, 1.5) -- Duración del efecto
+        -- Efecto de screen shake
+        screen_shake(7, 0.3) -- Intensidad y duración
+        -- Play sound_hurt 
+        sound.play("/music#sound_hurt")
 
         timer.delay(1, false, function()
+            go.set(self.sprite, "tint", vmath.vector4(1, 1, 1, 1)) -- Restaurar color original
+            -- Checar si hp es menor o igual a 0
+            if self.player.health <= 0 then
+                return
+            end
             -- Desactivar invulnerabilidad
             self.invulnerable = false
             msg.post("#collisionobject", "enable") -- Activar colisión
-            go.set(self.sprite, "tint", vmath.vector4(1, 1, 1, 1)) -- Restaurar color original
+            
         end)
         self.player.health = self.player.health - message.amount
         msg.post("main:/game_manager", "set_health", { health = self.player.health, max_health = self.player.max_health })
+        -- Verificar si la vida llega a 0
+        if self.player.health <= 0 then
+            self.state_machine:set_state("dead")
+        end
+    end
+    -- Respawn del jugador
+    if message_id == hash("respawn") then
+        self.state_machine:set_state("respawn", message)
     end
     if message_id == hash("current_level") then
         -- El nivel actual se encuentra en message.level
@@ -171,6 +188,9 @@ function on_message(self, message_id, message, sender)
 end
 
 function update(self, dt)
+    if self.state_machine.current_state == "dead" then
+        return -- No procesar inputs si el jugador está muerto
+    end
     -- Actualizar temporizador del disparo
     self.weapon:update(dt) -- Actualiza el temporizador del arma
      -- Aquí puedes actualizar la lógica del jugador
@@ -253,6 +273,50 @@ function ini_state_machine(self)
         end
     })
 
+    -- Estado DEAD
+    self.state_machine:add_state("dead", {
+        enter = function()
+            -- Limpiar inputs de movimiento
+            self.inputs[input_left] = nil
+            self.inputs[input_right] = nil
+            self.inputs[input_up] = nil
+            self.inputs[input_down] = nil
+            -- Limpiar input shooting
+            self.inputs[input_shoot] = nil
+            print("Jugador muerto")
+            self.control_enabled = false
+            msg.post("#collisionobject", "disable") -- Desactivar colisiones
+            --sprite.play_flipbook(msg.url(self.sprite), "dead") -- Animación de muerte
+            --sound.play("/music#sound_death") -- Sonido de muerte
+    
+            timer.delay(2, false, function()
+                msg.post("main:/game_manager", "player_died", { x = go.get_position().x, y = go.get_position().y, player_url = msg.url() })
+            end)
+        end,
+        update = function(dt)
+            -- No hacer nada, el jugador está muerto
+        end
+    })
+
+    self.state_machine:add_state("respawn", {
+        enter = function(message)
+            print("Reapareciendo jugador...")
+            self.player.health = self.player.max_health
+            msg.post("main:/game_manager", "set_health", { health = self.player.health, max_health = self.player.max_health })
+            go.set_position(vmath.vector3(message.x, 700, 0))
+            go.animate(".", "position.y", go.PLAYBACK_ONCE_FORWARD, 50, go.EASING_OUTQUAD, 2.5, 0, function(self)
+                -- Configuración inicial del jugador
+                self.invulnerable = false
+                self.position = go.get_position()
+                self.control_enabled = true
+                self.state_machine:set_state("idle")
+                msg.post("#collisionobject", "enable")
+                self.state_machine:set_state("idle")
+            end)
+        end
+    })
+    
+
     -- Estado inicial
     self.state_machine:set_state("idle")
 end
@@ -331,4 +395,22 @@ function blink_effect(self, duration)
             go.set(self.sprite, "tint", vmath.vector4(1, 1, 1, 1)) -- Normal
         end)
     end
+end
+
+function screen_shake(intensity, duration)
+    local time_elapsed = 0
+    local original_position = go.get_position("/camera#camera")
+
+    local function shake()
+        if time_elapsed < duration then
+            local dx = (math.random() * 2 - 1) * intensity
+            local dy = (math.random() * 2 - 1) * intensity
+            go.set_position(original_position + vmath.vector3(dx, dy, 0), "/camera#camera")
+            time_elapsed = time_elapsed + 0.05
+            timer.delay(0.05, false, shake)
+        else
+            go.set_position(original_position, "/camera#camera") -- Restaurar posición
+        end
+    end
+    shake()
 end
