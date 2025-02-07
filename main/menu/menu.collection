@@ -1,0 +1,21 @@
+name: "menu"
+scale_along_z: 0
+embedded_instances {
+  id: "music"
+  data: "embedded_components {\n"
+  "  id: \"sound\"\n"
+  "  type: \"sound\"\n"
+  "  data: \"sound: \\\"/assets/sounds/music/In Dire Need (LOOP).wav\\\"\\n"
+  "looping: 1\\n"
+  "\"\n"
+  "}\n"
+  ""
+}
+embedded_instances {
+  id: "script"
+  data: "components {\n"
+  "  id: \"menu\"\n"
+  "  component: \"/main/scripts/menu/menu.script\"\n"
+  "}\n"
+  ""
+}

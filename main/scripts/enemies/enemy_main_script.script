@@ -235,7 +235,7 @@ function init_enemy_state_machine(self)
         update = function(dt)
             self.enemy:move_to_initial_position(dt)
             if self.enemy:has_reached_target(self.enemy.initial_position) then
-                self.enemy.health = 0
+                --self.enemy.health = 0
                 self.state_machine:set_state("dead")
             end
         end,

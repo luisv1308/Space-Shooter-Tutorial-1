@@ -43,7 +43,7 @@ end
 
 -- Checar si esta fuera de la pantalla
 function Enemy:is_out_of_bounds()
-    return (self.position.x < -400 or self.position.x > 900) or self.position.y < -100 or self.position.y > 1200
+    return (self.position.x < -400 or self.position.x > 900) or self.position.y < -100 or self.position.y > 1400
 end
 
 function Enemy:die()

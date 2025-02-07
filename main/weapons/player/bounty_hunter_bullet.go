@@ -47,6 +47,6 @@ embedded_components {
 embedded_components {
   id: "sound_fire"
   type: "sound"
-  data: "sound: \"/assets/sounds/Weapons&Fight/SFX_shot7.wav\"\n"
+  data: "sound: \"/assets/sounds/Weapons&Fight/SFX_shot11.wav\"\n"
   ""
 }

@@ -1,0 +1,49 @@
+-- Índice de la opción seleccionada (0 = Start Game, 1 = Options)
+local selected_index = 0
+local options = {"start_game_text", "options_text"}
+local menu_can_move = true
+
+function update_cursor()
+	if menu_can_move == false then return end
+	local target_node = gui.get_node(options[selected_index + 1]) -- Obtener nodo actual
+	local pos = gui.get_position(target_node) -- Posición de la opción
+	local cursor_node = gui.get_node("cursor") -- Obtener el puntero
+	gui.set_position(cursor_node, vmath.vector3(pos.x - 150, pos.y + 15, 0)) -- Mover el puntero
+end
+
+function init(self)
+	msg.post(".", "acquire_input_focus") -- Capturar input
+	update_cursor() -- Asegurar que el cursor inicia en la opción correcta
+	local fade_box = gui.get_node("fade_box")
+    gui.set_color(fade_box, vmath.vector4(0, 0, 0, 1)) -- Iniciar en negro
+    gui.animate(fade_box, "color.w", 0, gui.EASING_LINEAR, 1.0) -- Desvanecer
+end
+
+function on_input(self, action_id, action)
+	if menu_can_move == false then return end
+	if action_id == hash("up") and action.pressed then
+		selected_index = (selected_index - 1) % 2 -- Cambiar opción arriba
+		update_cursor()
+		msg.post("game_manager", "play_sound_effect", {sound = "/menu_gui#menu_move"}) -- Sonido de mover
+	elseif action_id == hash("down") and action.pressed then
+		selected_index = (selected_index + 1) % 2 -- Cambiar opción abajo
+		update_cursor()
+		msg.post("game_manager", "play_sound_effect", {sound = "/menu_gui#menu_move"}) -- Sonido de mover
+	elseif action_id == hash("ui_accept") and action.pressed then
+		if selected_index == 0 then
+			menu_can_move = false
+			msg.post("game_manager", "play_sound_effect", {sound = "/menu_gui#menu_select"}) -- Sonido de selección
+			msg.post("menu:/script#menu", "fade_out_music", { duration = 2.0 }) 
+			fade_out_and_start() -- Iniciar la transición al seleccionar "Start Game"
+		elseif selected_index == 1 then
+			print("Abriendo opciones...")
+		end
+	end
+end
+
+function fade_out_and_start()
+	local fade_box = gui.get_node("fade_box") -- Obtener el nodo del fade
+	gui.animate(fade_box, "color.w", 1, gui.EASING_LINEAR, 1.0, 0, function()
+		msg.post("game_manager", "start_game") -- Cargar el juego cuando el fade termine
+	end)
+end

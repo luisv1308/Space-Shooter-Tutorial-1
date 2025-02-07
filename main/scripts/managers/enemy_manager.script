@@ -228,7 +228,7 @@ function spawn_enemies_formations(self, formation_type, count, level, movement_p
             local mid = math.ceil(count / 2)
             local offset = math.abs(i - mid)
             x = screen_width / 2 + offset * spacing_x * (i > mid and 1 or -1)
-            y = screen_height + 10 - (i - mid) * spacing_y
+            y = screen_height + 460 - (i - mid) * spacing_y
 
         elseif formation_type == "v_formation" then
             local mid = math.ceil(count / 2)
@@ -238,7 +238,7 @@ function spawn_enemies_formations(self, formation_type, count, level, movement_p
         elseif formation_type == "outside_diagonal_left" then
             -- x fuera de la pantalla a la izquierda
             x = -100
-            y = screen_height + 10 - (i - 1) * spacing_y
+            y = screen_height + 0 - (i - 1) * spacing_y
         -- Nueva formación: Doble columna
         elseif formation_type == "outside_diagonal_right" then
             -- x fuera de la pantalla a la derecha

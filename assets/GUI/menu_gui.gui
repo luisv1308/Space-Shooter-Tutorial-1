@@ -1,0 +1,124 @@
+script: "/assets/GUI/menu_gui.gui_script"
+fonts {
+  name: "pixelate_regular"
+  font: "/assets/fonts/pixelate_regular.font"
+}
+textures {
+  name: "menu"
+  texture: "/assets/menu.atlas"
+}
+nodes {
+  position {
+    x: 170.0
+    y: 320.0
+    z: -1.0
+  }
+  type: TYPE_BOX
+  texture: "menu/menu_background"
+  id: "background_image"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: 275.0
+    y: 139.0
+    z: 1.0
+  }
+  scale {
+    x: 1.5
+    y: 1.5
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_TEXT
+  text: "START GAME"
+  font: "pixelate_regular"
+  id: "start_game_text"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: 275.0
+    y: 89.0
+    z: 1.0
+  }
+  scale {
+    x: 1.5
+    y: 1.5
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_TEXT
+  text: "OPTIONS"
+  font: "pixelate_regular"
+  id: "options_text"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: 20.0
+    y: 154.0
+    z: 1.0
+  }
+  scale {
+    x: 3.0
+    y: 3.0
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  color {
+    z: 0.502
+  }
+  type: TYPE_TEXT
+  text: ">"
+  font: "pixelate_regular"
+  id: "cursor"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: 220.0
+    y: 552.0
+  }
+  scale {
+    x: 2.0
+    y: 2.0
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_TEXT
+  text: "STAR QUEST"
+  font: "pixelate_regular"
+  id: "title"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: 245.0
+    y: 319.0
+  }
+  scale {
+    x: 4.0
+    y: 7.0
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_BOX
+  id: "fade_box"
+  inherit_alpha: true
+  alpha: 0.0
+  size_mode: SIZE_MODE_AUTO
+}
+material: "/builtins/materials/gui.material"
+adjust_reference: ADJUST_REFERENCE_PARENT

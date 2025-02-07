@@ -282,6 +282,12 @@ function ini_state_machine(self)
     -- Estado DEAD
     self.state_machine:add_state("dead", {
         enter = function()
+            disable_sprites(self)
+            -- Explosion
+            local props = {
+                scale = vmath.vector3(6, 6, 1)
+            }
+            factory.create("#explosion_factory", go.get_position(), nil, props)
             -- Limpiar inputs de movimiento
             self.inputs[input_left] = nil
             self.inputs[input_right] = nil
@@ -295,7 +301,7 @@ function ini_state_machine(self)
             --sprite.play_flipbook(msg.url(self.sprite), "dead") -- Animación de muerte
             --sound.play("/music#sound_death") -- Sonido de muerte
             -- Parar countdown_time
-            msg.post("main:/game_manager", "stop_countdown")
+            --msg.post("main:/game_manager", "stop_countdown")
             timer.delay(2, false, function()
                 msg.post("main:/game_manager", "player_died", { x = go.get_position().x, y = go.get_position().y, player_url = msg.url() })
             end)
@@ -308,6 +314,8 @@ function ini_state_machine(self)
     self.state_machine:add_state("respawn", {
         enter = function(message)
             print("Reapareciendo jugador...")
+            -- Activar sprites
+            enable_sprites(self)
             self.player.health = self.player.max_health
             msg.post("main:/game_manager", "set_health", { health = self.player.health, max_health = self.player.max_health })
             go.set_position(vmath.vector3(message.x, 700, 0))
@@ -430,4 +438,14 @@ function configurePlayer(self, start_y, target_y, scale, easing, duration, callb
     go.set_scale(vmath.vector3(scale, scale, 1))
     go.animate(".", "position.y", go.PLAYBACK_ONCE_FORWARD, target_y, easing, duration, 0)
     go.animate(".", "scale", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(1, 1, 1), easing, duration, 0, callback)
+end
+
+function enable_sprites(self)
+    msg.post(self.sprite, "enable")
+    msg.post("#rocket_sprite", "enable")
+end
+
+function disable_sprites(self)
+    msg.post(self.sprite, "disable")
+    msg.post("#rocket_sprite", "disable")
 end
