@@ -12,6 +12,10 @@ local LEVEL_DATA = {
     { enemy_count = 15, proxy = "/level3#proxy" }
 }
 
+
+-- speed of the time in the collection proxy
+go.property("speed", 1)
+
 function init(self)
     self.current_level_proxy = nil -- Declaramos explícitamente esta variable
     self.loading = false -- Para evitar cargar niveles mientras otro se está cargando
@@ -23,6 +27,8 @@ end
 
 function update(self, dt)
     -- Aquí puedes manejar transiciones de nivel, puntajes, etc.
+    -- update the time step of the proxy each frame since it might be animated
+    msg.post(LEVEL_DATA[current_level].proxy, "set_time_step", { factor = self.speed, mode = 0 })
 end
 
 function on_message(self, message_id, message, sender)
@@ -61,8 +67,8 @@ function on_message(self, message_id, message, sender)
     end
 
     if message_id == hash("set_lives") then
-        self.lives = message.lives
-        msg.post("/lives_gui", "set_lives", { lives = self.lives })
+        lives = message.lives
+        msg.post("/lives_gui", "set_lives", { lives = lives })
     end
 
     if message_id == hash("add_score") then
@@ -79,14 +85,18 @@ function on_message(self, message_id, message, sender)
     end
 
     if message_id == hash("player_died") then
-        self.lives = self.lives - 1
+        lives = lives - 1
         msg.post("/lives_gui", "update_lives", { lives = self.lives })
 
-        if self.lives > 0 then
+        if lives > 0 then
             msg.post(message.player_url, "respawn", { x = message.x, y = message.y })
         else
             -- Game Over
-            msg.post("main:/ui", "show_game_over")
+            --msg.post("main:/ui", "show_game_over")
+             -- 1. Pausar todos los game objects
+            go.cancel_animations("#", "speed")
+            -- make sure speed never goes below 0
+            self.speed = 0
         end
     end
 end
@@ -124,5 +134,5 @@ function load_level(self, level)
 end
 
 function final(self)
-    sys.save("game_data", { score = score }) -- Guardar el puntaje al salir
+    sys.save("game_data", { lives = lives, score = score }) -- Guardar el puntaje al salir
 end

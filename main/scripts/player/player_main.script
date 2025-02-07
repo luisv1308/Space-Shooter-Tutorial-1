@@ -69,13 +69,19 @@ function init(self)
      local start_y = 700 -- Fuera de la pantalla (640 de alto + extra)
  
      go.set_position(vmath.vector3(start_x, start_y, 0))
-    local target_y = 200
-    go.animate(".", "position.y", go.PLAYBACK_ONCE_FORWARD, target_y, go.EASING_OUTQUAD, 2.5, 0, function(self)
+    local start_y = 700
+    local target_y = 50
+    local scale = 3
+    local easing = go.EASING_OUTQUAD
+    local duration = 2.5
+
+    configurePlayer(self, start_y, target_y, scale, easing, duration, function()
         -- Configuración inicial del jugador
+        self.invulnerable = false
         self.position = go.get_position()
         self.control_enabled = true
-        self.state_machine:set_state("idle")
         msg.post("#collisionobject", "enable")
+        self.state_machine:set_state("idle")
     end)
 
 end
@@ -288,7 +294,8 @@ function ini_state_machine(self)
             msg.post("#collisionobject", "disable") -- Desactivar colisiones
             --sprite.play_flipbook(msg.url(self.sprite), "dead") -- Animación de muerte
             --sound.play("/music#sound_death") -- Sonido de muerte
-    
+            -- Parar countdown_time
+            msg.post("main:/game_manager", "stop_countdown")
             timer.delay(2, false, function()
                 msg.post("main:/game_manager", "player_died", { x = go.get_position().x, y = go.get_position().y, player_url = msg.url() })
             end)
@@ -304,12 +311,16 @@ function ini_state_machine(self)
             self.player.health = self.player.max_health
             msg.post("main:/game_manager", "set_health", { health = self.player.health, max_health = self.player.max_health })
             go.set_position(vmath.vector3(message.x, 700, 0))
-            go.animate(".", "position.y", go.PLAYBACK_ONCE_FORWARD, 50, go.EASING_OUTQUAD, 2.5, 0, function(self)
+            local start_y = 700
+            local target_y = 50
+            local scale = 3
+            local easing = go.EASING_OUTQUAD
+            local duration = 2.5
+            configurePlayer(self, start_y, target_y, scale, easing, duration, function()
                 -- Configuración inicial del jugador
                 self.invulnerable = false
                 self.position = go.get_position()
                 self.control_enabled = true
-                self.state_machine:set_state("idle")
                 msg.post("#collisionobject", "enable")
                 self.state_machine:set_state("idle")
             end)
@@ -413,4 +424,10 @@ function screen_shake(intensity, duration)
         end
     end
     shake()
+end
+
+function configurePlayer(self, start_y, target_y, scale, easing, duration, callback)
+    go.set_scale(vmath.vector3(scale, scale, 1))
+    go.animate(".", "position.y", go.PLAYBACK_ONCE_FORWARD, target_y, easing, duration, 0)
+    go.animate(".", "scale", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(1, 1, 1), easing, duration, 0, callback)
 end
