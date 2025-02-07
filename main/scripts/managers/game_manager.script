@@ -72,6 +72,11 @@ function on_message(self, message_id, message, sender)
     elseif message_id == hash("get_score") then
         msg.post(sender, "score_value", { points = score }) -- Devolver puntaje
     end
+
+    -- Detener Countdown
+    if message_id == hash("stop_countdown") then
+        msg.post("/health_gui", "stop_countdown")
+    end
 end
 
 function load_level_formations(self, level)

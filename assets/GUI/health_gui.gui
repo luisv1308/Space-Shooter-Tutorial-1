@@ -1,4 +1,12 @@
 script: "/assets/GUI/health_gui.gui_script"
+fonts {
+  name: "cyber_time"
+  font: "/assets/fonts/cyber_time.font"
+}
+fonts {
+  name: "pixelate_regular"
+  font: "/assets/fonts/pixelate_regular.font"
+}
 textures {
   name: "player_gui"
   texture: "/assets/tiles/player_gui.tilesource"
@@ -17,6 +25,22 @@ nodes {
   id: "heart_template"
   inherit_alpha: true
   size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: 220.0
+    y: 620.0
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_TEXT
+  text: "99\n"
+  ""
+  font: "pixelate_regular"
+  id: "countdown"
+  inherit_alpha: true
 }
 material: "/builtins/materials/gui.material"
 adjust_reference: ADJUST_REFERENCE_PARENT

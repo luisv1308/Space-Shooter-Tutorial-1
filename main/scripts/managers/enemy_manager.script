@@ -39,12 +39,19 @@ function update(self, dt)
         if formation.enemy_type == hash("boss") then
             -- Crear objeto warning
             factory.create("/warning#factory_warning", vmath.vector3(0, 0, 0), nil, { level = self.current_level, timer = 5 })
+            -- Detener la musica de fondo
+            msg.post("/music#music_background", "stop_sound")
+            -- Reproducir warning luego la musica de jefe
+            msg.post("/music#music_warning", "play_sound")
             -- Esperar 5 segundos
             local boss_name = formation.boss_name
             timer.delay(5, false, function()
+                -- Parar musica warning
+                msg.post("/music#music_warning", "stop_sound")
+                -- Reproducir musica de jefe
+                msg.post("/music#music_boss", "play_sound")
                 -- Llamar el factory boss para crear el jefe
                 spawn_boss(self, boss_name)
-                
             end)
             -- Remover de la lista de formaciones
             table.remove(self.spawn_formations, self.formation_index)

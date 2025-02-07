@@ -1,0 +1,4 @@
+font: "/assets/fonts/Pixelate-Regular.ttf"
+material: "/builtins/fonts/font.material"
+size: 32
+characters: " !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"

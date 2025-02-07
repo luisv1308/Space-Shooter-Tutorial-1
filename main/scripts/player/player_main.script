@@ -126,9 +126,11 @@ function on_message(self, message_id, message, sender)
         local center_y = 320  -- Mitad de 640
 
         go.animate(".", "position", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(center_x, center_y, 0), go.EASING_OUTQUAD, 1, 0, function()
-            -- Parar musica de background
-            msg.post("/music#music_background", "stop_sound")
-            -- 🎵 Aquí puedes reproducir la música de escape
+            -- Parar countdown_time
+            msg.post("main:/game_manager", "stop_countdown")
+            -- Parar musica de jefe
+            msg.post("/music#music_boss", "stop_sound")
+            -- 🎵 Aquí puedes reproducir la musica de escape
             msg.post("/music#music_success", "play_sound") 
             -- Cambiar velocidad de background
             msg.post("/bg_far#background", "light_speed", { speed = 100 })

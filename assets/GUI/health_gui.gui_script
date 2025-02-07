@@ -38,6 +38,10 @@ function on_message(self, message_id, message, sender)
     if message_id == hash("start_countdown") then
         start_countdown(message.time)
     end
+    -- Detener countdown
+    if message_id == hash("stop_countdown") then
+        stop_countdown()
+    end
 end
 
 function start_countdown(time)
