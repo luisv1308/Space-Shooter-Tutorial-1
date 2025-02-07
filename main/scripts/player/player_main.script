@@ -34,6 +34,7 @@ function init(self)
     self.powerup_timer = 0
     self.active_powerup = nil
     self.real_value = 0 -- valor antes del powerup 
+    self.invulnerable = false
 
     msg.post("#bounty_hunter_sprite", "disable")
     msg.post("#robot_sprite", "disable")
@@ -80,6 +81,28 @@ function init(self)
 end
 
 function on_message(self, message_id, message, sender)
+    -- Recibir daño del enemigo
+    if message_id == hash("take_damage") then
+        if self.invulnerable then
+            return
+        end
+         -- Activar invulnerabilidad
+        self.invulnerable = true
+        msg.post("#collisionobject", "disable") -- Desactiva colisión
+
+         -- Efecto de parpadeo y cambio de color
+        -- Efecto de parpadeo y cambio de color
+        blink_effect(self, 1.5) -- Duración del efecto
+
+        timer.delay(1, false, function()
+            -- Desactivar invulnerabilidad
+            self.invulnerable = false
+            msg.post("#collisionobject", "enable") -- Activar colisión
+            go.set(self.sprite, "tint", vmath.vector4(1, 1, 1, 1)) -- Restaurar color original
+        end)
+        self.player.health = self.player.health - message.amount
+        msg.post("main:/game_manager", "set_health", { health = self.player.health, max_health = self.player.max_health })
+    end
     if message_id == hash("current_level") then
         -- El nivel actual se encuentra en message.level
         --print("Nivel actual recibido: zzzzzzzzzzzzzzzz", message.level)
@@ -294,4 +317,18 @@ end
 
 function disable_control(self)
     self.control_enabled = false
+end
+
+function blink_effect(self, duration)
+    local blink_time = 0.1
+    local blink_repeats = math.floor(duration / (blink_time * 2)) -- Ajuste automático
+
+    for i = 0, blink_repeats - 1 do
+        timer.delay(i * blink_time * 2, false, function()
+            go.set(self.sprite, "tint", vmath.vector4(1, 0.5, 0.5, 1)) -- Rojo sutil
+        end)
+        timer.delay(i * blink_time * 2 + blink_time, false, function()
+            go.set(self.sprite, "tint", vmath.vector4(1, 1, 1, 1)) -- Normal
+        end)
+    end
 end

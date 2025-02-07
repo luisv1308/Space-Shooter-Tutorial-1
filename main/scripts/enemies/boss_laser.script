@@ -60,7 +60,7 @@ function on_message(self, message_id, message, sender)
 	if message_id == hash("contact_point_response") then
 		if message.other_group == hash("player") then
 			-- Enviar mensaje de daño al player
-			msg.post(message.other_id, "take_damage", { amount = 10 })
+			msg.post(message.other_id, "take_damage", { amount = 15 })
 		end
 	end
 

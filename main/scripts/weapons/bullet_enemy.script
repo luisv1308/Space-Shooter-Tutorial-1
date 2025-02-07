@@ -6,9 +6,9 @@ function init(self)
     self.speed = self.speed or 200 -- Velocidad por defecto
     self.direction = self.direction or vmath.vector3(0, 0, 0) -- Dirección por defecto
 	self.damage = self.damage or 10 -- Daño por defecto
-	print("ID del proyectil: ", go.get_id())
-	print("Velocidad del proyectil: ", self.speed)
-	print("Direccion del proyectil: ", self.direction)
+	--print("ID del proyectil: ", go.get_id())
+	--print("Velocidad del proyectil: ", self.speed)
+	--print("Direccion del proyectil: ", self.direction)
     local position = go.get_position()
     local player_position = self.direction
     self.new_direction = vmath.normalize(player_position - position)
@@ -34,7 +34,7 @@ function on_message(self, message_id, message, sender)
     end
     if message_id == hash("contact_point_response") then
         -- Verifica si el objeto con el que colisionó es un enemigo
-        if message.other_group == hash("enemy") then
+        if message.other_group == hash("player") then
             -- Envía el mensaje "take_damage" al script del enemigo
             msg.post(message.other_id, "take_damage", { amount = self.damage })
             -- Opcional: Destruye la bala
