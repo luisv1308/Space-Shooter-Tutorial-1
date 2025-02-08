@@ -30,8 +30,8 @@ function init(self)
      -- Crear una table con los targets url 
      self.targets = {
         ["player"] = PlayerManager.get_player(),
-        ["target_left"] = "/target_left",
-        ["target_right"] = "/target_right",
+        ["target_left"] = "/target_center",
+        ["target_right"] = "/target_center",
         ["target_center"] = "/target_center"
      }
 

@@ -53,8 +53,15 @@ function on_message(self, message_id, message, sender)
         end)
         starting_game = true
         current_level = 1
-        -- Cargar el nivel 1
-        load_level(self, current_level)
+        -- Cargar el nivel 1 y unload actual 
+        msg.post("/menu#proxy", "disable")
+        msg.post("/menu#proxy", "final")
+        msg.post("/menu#proxy", "unload")
+        -- Esperar 3 segundos y cargar nivel
+        timer.delay(3.0, false, function()
+            --current_level = current_level + 1
+            load_level(self, current_level)
+        end)        
     end
     if message_id == hash("level_cleared") then
         --current_level = current_level + 1
@@ -75,12 +82,12 @@ function on_message(self, message_id, message, sender)
         if is_menu then
             
             is_menu = false
-            return
+            
         else
             -- Esconder menu gui
             --msg.post("/menu_gui", "disable")
         end
-        print("Nivel cargado:", self.current_level_base.socket)
+        print("Nivel cargado:", self.current_level_base)
         --dispatcher.broadcast(hash("current_level"), { level = self.current_level, base = self.current_level_base.socket })
        -- msg.post("@broadcast", "current_level", { level = self.current_level, base = self.current_level_base.socket })
         print("Nivel cargado y activado:", current_level)
@@ -93,23 +100,14 @@ function on_message(self, message_id, message, sender)
         health = my_table.health
        
     elseif message_id == hash("proxy_unloaded") then
+        print("Proxy unloaded ======", sender)
         -- checar si es menu 
         if is_menu then
             return
         end
         -- Actualizar game_data
         sys.save("game_data", { score = score, lives = lives, health = health })
-        -- Una vez descargado, cargar el nuevo nivel
-        if starting_game then
-            -- Actualizar starting_game
-            
-            current_level = 1
-        else 
-            -- Esconder menu gui
-            msg.post("/menu_gui", "disable")
-            current_level = current_level + 1
-        end
-        load_level(self, current_level)
+       
     end
 
     if message_id == hash("set_health") then
@@ -149,13 +147,28 @@ function on_message(self, message_id, message, sender)
         if lives > 0 then
             msg.post(message.player_url, "respawn", { x = message.x, y = message.y })
         else
+            disabled_gui(self)
+            -- Parar musica
+           -- sound.stop("/game_over_gui#sound_game_over")
             -- Game Over
-            --msg.post("main:/ui", "show_game_over")
+            msg.post("/game_over_gui", "show_game_over")
              -- 1. Pausar todos los game objects
             go.cancel_animations("#", "speed")
             -- make sure speed never goes below 0
-            self.speed = 0
+            --self.speed = 0
         end
+    end
+
+    -- Cargar menu
+    if message_id == hash("load_menu") then
+        unload_level(self, current_level)
+        -- Esperar 4  segundos y cargar after_game_over
+        timer.delay(4.0, false, function()
+            after_game_over(self)
+        end)
+        --current_level = 0
+        --load_menu(self)
+        --after_game_over(self)
     end
 
     if message_id == hash("play_sound_effect") then
@@ -182,37 +195,47 @@ function load_level(self, level)
 
     self.loading = true
 
-    -- Descargar el nivel actual si existe
-    if self.current_level_proxy then
-        -- Esperar 5 segundos antes de descargar el nuevo nivel
-        timer.delay(5.0, false, function()
-            msg.post(self.current_level_proxy, "unload")
-            self.loading = false
-            self.current_level_proxy = nil
-        end)
-    else
-        -- Si no hay nivel cargado, cargar directamente el nuevo nivel
-        local proxy = LEVEL_DATA[level].proxy
-        self.current_level_proxy = proxy
-        msg.post(proxy, "load")
+    -- Cargar el nivel actual
+    local proxy = LEVEL_DATA[level].proxy
+    self.current_level_proxy = proxy
+    msg.post(proxy, "enabled")
+    msg.post(proxy, "load")
+    msg.post(proxy, "init")
+end
+
+function unload_level(self, level)
+    self.loading = true
+    if not self.current_level_proxy then
+        self.loading = false
+        print("No hay nivel cargado.")
+        return
     end
+    local proxy = LEVEL_DATA[level].proxy
+    msg.post(proxy, "disable")
+    msg.post(proxy, "final")
+    msg.post(proxy, "unload")
+    self.loading = false
+    self.current_level_proxy = nil
 end
 
 function load_menu(self)
-    -- Descargar el nivel actual si existe
-    if self.current_level_proxy then
-        -- Esperar 5 segundos antes de descargar el nuevo nivel
-        timer.delay(5.0, false, function()
-            msg.post(self.current_level_proxy, "unload")
-            self.loading = false
-            self.current_level_proxy = nil
-        end)
-    else
-        -- Si no hay nivel cargado, cargar directamente el nuevo nivel
-        local proxy = "/menu#proxy"
-        self.current_level_proxy = proxy
-        msg.post(proxy, "load")
+    if self.loading then
+        print("Ya se está cargando un nivel.")
+        return
     end
+
+    self.loading = true
+    -- Si no hay nivel cargado, cargar directamente el nuevo nivel
+    local proxy = "/menu#proxy"
+    self.current_level_proxy = proxy
+    
+    msg.post(proxy, "load")
+    msg.post(proxy, "init")
+    msg.post(proxy, "enable")
+    --msg.post("/game_over_gui", "disable")
+    msg.post("/menu_gui", "enable")
+    msg.post("/menu_gui", "start_game")
+    self.loading = false
 end
 
 function enabled_gui(self)
@@ -227,6 +250,23 @@ function disabled_gui(self)
     msg.post("/score_gui", "disable")
     msg.post("/weapon_gui", "disable")
     msg.post("/health_gui", "disable")
+end
+
+function after_game_over(self)
+    -- Esconder game_over_gui
+    msg.post("/game_over_gui", "hide_game_over")
+    starting_game = true
+    is_menu = true
+    current_level = 0
+    -- Desactivar los gui
+    disabled_gui(self)
+    -- Limpiar datos de score y lives en game_data
+    sys.save("game_data", { score = 0, lives = 0, health = 0 })
+
+    --self.current_level_proxy = nil -- Declaramos explícitamente esta variable
+    self.loading = false -- Para evitar cargar niveles mientras otro se está cargando
+    -- Si no hay nivel cargado, cargar directamente el nuevo nivel
+    load_menu(self)
 end
 
 function final(self)

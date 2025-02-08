@@ -9,7 +9,7 @@ textures {
 }
 nodes {
   position {
-    x: 170.0
+    x: 164.0
     y: 320.0
     z: -1.0
   }
@@ -86,6 +86,7 @@ nodes {
   position {
     x: 220.0
     y: 552.0
+    z: 1.0
   }
   scale {
     x: 2.0
@@ -103,7 +104,7 @@ nodes {
 }
 nodes {
   position {
-    x: 245.0
+    x: 233.0
     y: 319.0
   }
   scale {

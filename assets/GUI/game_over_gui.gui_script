@@ -1,0 +1,58 @@
+function init(self)
+
+end
+
+function final(self)
+	-- Add finalization code here
+	-- Learn more: https://defold.com/manuals/script/
+	-- Remove this function if not needed
+end
+
+function update(self, dt)
+	-- Add update code here
+	-- Learn more: https://defold.com/manuals/script/
+	-- Remove this function if not needed
+end
+
+function on_message(self, message_id, message, sender)
+	-- Mostrar game over
+	if message_id == hash("show_game_over") then
+		show_game_over()
+	
+	end
+	-- Ocultar game over
+	if message_id == hash("hide_game_over") then
+		hide_game_over()
+	end
+end
+
+-- function show_game_over()
+--     local node = gui.get_node("game_over")
+-- 	sound.play("/game_over_gui#sound_game_over")
+--     gui.set_enabled(node, true)
+--     gui.animate(node, "color.w", 1, gui.EASING_OUTCUBIC, 1.5, 0, function()
+--         timer.delay(3, false, function() -- Espera 3 segundos
+--             gui.animate(node, "color.w", 0, gui.EASING_INCUBIC, 1, 0, function()
+--                 gui.set_enabled(node, false) -- Ocultarlo después de la animación
+-- 				-- Llamar game_manager para cargar el menu 
+-- 				msg.post("game_manager", "load_menu")
+--             end)
+--         end)
+--     end)
+-- end
+
+function show_game_over()
+    local node = gui.get_node("game_over_text")
+    gui.set_enabled(node, true) -- Habilitarlo antes de animar
+    gui.animate(node, "color.w", 1, gui.EASING_OUTCUBIC, 1.5) -- Animar alpha de 0 a 1 en 1.5s
+	sound.play("/game_over_gui#sound_game_over")
+	-- Mensaje para game_manager para cargar el menu
+	msg.post("game_manager", "load_menu")
+end
+
+function hide_game_over()
+	local node = gui.get_node("game_over_text")
+    gui.animate(node, "color.w", 0, gui.EASING_INCUBIC, 1, 0, function()
+        --gui.set_enabled(node, false) -- Ocultarlo después de la animación
+    end)
+end

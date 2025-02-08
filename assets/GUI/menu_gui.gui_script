@@ -19,6 +19,15 @@ function init(self)
     gui.animate(fade_box, "color.w", 0, gui.EASING_LINEAR, 1.0) -- Desvanecer
 end
 
+function on_message(self, message_id, message)
+	if message_id == hash("start_game") then
+		menu_can_move = true
+		local fade_box = gui.get_node("fade_box")
+		gui.animate(fade_box, "color.w", 0, gui.EASING_LINEAR, 1.0) -- Desvanecer
+		--fade_out_and_start() -- Iniciar la transición al iniciar el juego
+	end
+end
+
 function on_input(self, action_id, action)
 	if menu_can_move == false then return end
 	if action_id == hash("up") and action.pressed then
@@ -45,5 +54,7 @@ function fade_out_and_start()
 	local fade_box = gui.get_node("fade_box") -- Obtener el nodo del fade
 	gui.animate(fade_box, "color.w", 1, gui.EASING_LINEAR, 1.0, 0, function()
 		msg.post("game_manager", "start_game") -- Cargar el juego cuando el fade termine
+		-- Cambiar alpha a 0
+		--gui.animate(fade_box, "color.w", 0, gui.EASING_LINEAR, 1.0)
 	end)
 end
