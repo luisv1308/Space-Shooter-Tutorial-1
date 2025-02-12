@@ -31,7 +31,7 @@ function update(self, dt)
     self.spawn_timer = self.spawn_timer + dt
     local formations_count = #self.spawn_formations
     
-    if self.spawn_timer >= Config.enemies.spawn_time and self.counter < formations_count and not self.stop_spawning then -- Cada 5 segundos
+    if self.spawn_timer >= Config.enemies.spawn_time and formations_count > 0 and not self.stop_spawning then -- Cada 5 segundos
         --self.spawn_formations = Utilities:shuffle_table(self.spawn_formations)
 
         local formation = self.spawn_formations[self.formation_index]
@@ -80,11 +80,11 @@ function update(self, dt)
                     self.current_level, formation.other.movement_pattern, formation.other.enemy_type
                 )
             end
-            self.formation_index = self.formation_index % #self.spawn_formations + 1
+            --self.formation_index = self.formation_index % #self.spawn_formations + 1
             -- Remover de la lista de formaciones
             table.remove(self.spawn_formations, self.formation_index)
             -- Set formation null
-            formation = nil
+            --formation = nil
         end
         self.spawn_timer = 0
         self.counter = self.counter + 1

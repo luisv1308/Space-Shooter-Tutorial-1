@@ -1,3 +1,5 @@
+local Config = require "main/config"
+
 -- game_manager.script
 local formations_data  = require "main/scripts/formations"
 local dispatcher = require "main/scripts/dispatcher"
@@ -18,14 +20,23 @@ local LEVEL_DATA = {
 go.property("speed", 1)
 
 function init(self)
-    -- Desactivar los gui
-    disabled_gui(self)
     -- Limpiar datos de score y lives en game_data
     sys.save("game_data", { score = 0, lives = 0, health = 0 })
 
     self.current_level_proxy = nil -- Declaramos explícitamente esta variable
     self.loading = false -- Para evitar cargar niveles mientras otro se está cargando
-    load_menu(self)
+    -- Debugging para cargar rapido sin menu
+    if Config.debug then
+        disabled_menu_gui(self)
+        current_level = 1
+        is_menu = false
+        load_level(self, current_level)
+    else
+        disabled_gui(self)
+        load_menu(self)
+    end
+
+    --load_menu(self)
     --load_level(self, current_level)
     --load_level_formations(self, self.current_level)
     --msg.post("@broadcast", "current_level", { level = self.current_level })
@@ -67,7 +78,7 @@ function on_message(self, message_id, message, sender)
         --current_level = current_level + 1
         if current_level <= #LEVEL_DATA then
             self.loading = false
-            load_level(self, current_level)
+            unload_level(self, current_level)
         else
             print("¡Juego completado!")
         end
@@ -107,7 +118,20 @@ function on_message(self, message_id, message, sender)
         end
         -- Actualizar game_data
         sys.save("game_data", { score = score, lives = lives, health = health })
-       
+        -- Checar si aun quedan niveles para cargar
+        if starting_game then
+            if current_level < #LEVEL_DATA then
+                load_level(self, current_level)
+            end     
+        else
+            current_level = current_level + 1
+            if current_level < #LEVEL_DATA then
+                -- Esperar 3 segundos y cargar nivel
+                timer.delay(3.0, false, function()
+                    load_level(self, current_level)
+                end)
+            end 
+        end
     end
 
     if message_id == hash("set_health") then
@@ -192,6 +216,13 @@ function load_level(self, level)
         print("Ya se está cargando un nivel.")
         return
     end
+    -- Checar si hay nivel cargado
+    if self.current_level_proxy then
+        print("Ya hay un nivel cargado.")
+        self.loading = false
+        unload_level(self, level)
+        return
+    end
 
     self.loading = true
 
@@ -216,6 +247,7 @@ function unload_level(self, level)
     msg.post(proxy, "unload")
     self.loading = false
     self.current_level_proxy = nil
+    
 end
 
 function load_menu(self)
@@ -250,6 +282,10 @@ function disabled_gui(self)
     msg.post("/score_gui", "disable")
     msg.post("/weapon_gui", "disable")
     msg.post("/health_gui", "disable")
+end
+
+function disabled_menu_gui(self)
+    msg.post("/menu_gui", "disable")
 end
 
 function after_game_over(self)

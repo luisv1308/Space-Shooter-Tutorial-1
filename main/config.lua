@@ -4,6 +4,7 @@ local M = {}
 M.game_title = "Mi Juego Increíble"
 M.screen_width = 480
 M.screen_height = 640
+M.debug = false
 
 -- Configuraciones de jugador
 M.player = {
